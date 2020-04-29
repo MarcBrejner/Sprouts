@@ -21,6 +21,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="linkedList.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="grid.py" />
     <Compile Include="squareNode.py" />
     <Compile Include="Sprouts.py" />

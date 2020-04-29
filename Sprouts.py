@@ -3,6 +3,7 @@ import pygame, random
 from pygame.locals import *
 from squareNode import SquareNode
 from grid import Grid
+from linkedList import LinkedList
 
 pygame.init()
  
@@ -22,11 +23,16 @@ drawing = False
 last_pos = None
 size = (SCREENWIDTH, SCREENHEIGHT)
 
-#GridTest
-gameGrid = Grid(SCREENWIDTH,SCREENHEIGHT,0)
-gameGrid.set(200,300,123)
-print(gameGrid.get(200,300))
+#ListTest
+listTest = LinkedList()
+listTest.prepend(23)
+listTest.prepend((21, 22))
+print(listTest)
+listTest.remove()
 
+
+#LinkedList
+lst = LinkedList()
 
 #PYGAME INITS
 screen = pygame.display.set_mode(size)
@@ -54,12 +60,14 @@ while carryOn:
                     mouse_position = pygame.mouse.get_pos()
                     if last_pos is not None:
                         pygame.draw.line(screen, BLACK, last_pos, mouse_position, 1)
+                        lst.prepend((last_pos,mouse_position))
                         #TODO: Add lines to gameGrid
                     last_pos = mouse_position
             elif event.type == MOUSEBUTTONUP:
                 mouse_position = (0, 0)
                 last_pos = None
                 drawing = False
+                print(lst)
             elif event.type == MOUSEBUTTONDOWN:
                 drawing = True
 
@@ -82,6 +90,6 @@ while carryOn:
         pygame.display.flip()
  
         #Number of frames per secong e.g. 60
-        clock.tick(60)
+        clock.tick(30)
 
 pygame.quit()
