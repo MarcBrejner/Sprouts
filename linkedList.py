@@ -1,3 +1,5 @@
+import pygame
+
 # Node class
 class Node:
 
@@ -30,13 +32,35 @@ class LinkedList:
         self.head = Node(data=data, next=self.head)
 
     # Remove the content of the list
-    def remove(self):
+    def clean(self):
         curr = self.head
         while curr:
             prev = curr.next
             del curr.data
             curr = prev
     
+    # Draw the first element of the list
+    def drawHead(self, image, color):
+        curr = self.head
+        pygame.draw.line(image, color, curr.data[0], curr.data[1], 1)
+    
+    # Draw the entire list
+    def drawLst(self, image, color):
+        curr = self.head
+        while curr:
+            pygame.draw.line(image, color, curr.data[0], curr.data[1], 1)
+            curr = curr.next
 
+    # Concat two linked lists
+    def concatLst(self, tempLst):
+        curr = self.head
+        while curr.next != None:
+            curr = curr.next
+        curr.next = tempLst
+        return permLst
 
-
+    def merge(self, tempLst):
+        curr = tempLst.head
+        while curr:
+            self.prepend(curr.data)
+            curr = curr.next

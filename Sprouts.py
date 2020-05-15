@@ -20,29 +20,25 @@ SCREENWIDTH=400
 SCREENHEIGHT=500
 mouse_position = (0, 0)
 drawing = False
+merged = False
 last_pos = None
 size = (SCREENWIDTH, SCREENHEIGHT)
 
-#ListTest
-listTest = LinkedList()
-listTest.prepend(23)
-listTest.prepend((21, 22))
-print(listTest)
-listTest.remove()
-
-
 #LinkedList
-lst = LinkedList()
+permLst = LinkedList()
+permLst.prepend((1,1))
+permLst.prepend((99,99))
+tempLst = LinkedList()
 
 #PYGAME INITS
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Car Racing")
+pygame.display.set_caption("Sprouts")
  
 #This will be a list that will contain all the sprites we intend to use in our game.
 all_sprites_list = pygame.sprite.Group()
 screen.fill(GREEN) 
-all_sprites_list.add(SquareNode(PURPLE, 20, 30,100,400))
-all_sprites_list.add(SquareNode(RED, 20, 30,200,300))
+all_sprites_list.add(SquareNode(RED, 20, 20,100,400))
+all_sprites_list.add(SquareNode(RED, 20, 20,200,300))
  
 # Add the node to the list of objects
  
@@ -58,23 +54,35 @@ while carryOn:
             elif event.type == MOUSEMOTION:
                 if (drawing):
                     mouse_position = pygame.mouse.get_pos()
+                    # Add the new line to the linked list and draw the line
                     if last_pos is not None:
-                        pygame.draw.line(screen, BLACK, last_pos, mouse_position, 1)
-                        lst.prepend((last_pos,mouse_position))
-                        #TODO: Add lines to gameGrid
+                        # Draws a line between the current mouse position and the mouse position from the last frame
+                        tempLst.prepend((last_pos,mouse_position))
+                        tempLst.drawHead(screen, BLACK)
                     last_pos = mouse_position
             elif event.type == MOUSEBUTTONUP:
+                #When mouse is released, checks if mouse is over a node
+                pos = pygame.mouse.get_pos()
+                for sprite in all_sprites_list:
+                    if sprite.rect.collidepoint(pos):
+                        permLst.merge(tempLst)
+                        merged = True
+                # Delete drawn line if it didn't end in a sprite
+                if (not merged):
+                    tempLst.drawLst(screen, GREEN)
                 mouse_position = (0, 0)
                 last_pos = None
                 drawing = False
-                print(lst)
+                merged = False
+                tempLst = LinkedList()
+                print(permLst)
             elif event.type == MOUSEBUTTONDOWN:
-                drawing = True
+                #When mouse is pressed, checks if mouse is over a node, if so start drawing.
+                pos = pygame.mouse.get_pos()
+                for sprite in all_sprites_list:
+                    if sprite.rect.collidepoint(pos): 
+                        drawing = True
 
-            #elif event.type == pygame.MOUSEBUTTONDOWN:
-                #mouseX, mouseY = pygame.mouse.get_pos()
-                #all_sprites_list.add(SquareNode(RED, 20, 30,mouseX,mouseY))
-        
         #Can draw rectangles on mouse click, TODO: when clicking a rectangle - draw a line to another rectangle.        
                 
         #Game Logic
@@ -90,6 +98,6 @@ while carryOn:
         pygame.display.flip()
  
         #Number of frames per secong e.g. 60
-        clock.tick(30)
+        clock.tick(60)
 
 pygame.quit()
