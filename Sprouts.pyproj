@@ -4,13 +4,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>12279c67-aa4d-4649-b00e-a207559b9ee4</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Sprouts.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>Sprouts</Name>
     <RootNamespace>Sprouts</RootNamespace>
+    <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,8 +26,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="grid.py" />
+    <Compile Include="main.py" />
+    <Compile Include="intersection.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="sproutsController.py" />
+    <Compile Include="sproutsDisplay.py" />
     <Compile Include="squareNode.py" />
-    <Compile Include="Sprouts.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

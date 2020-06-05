@@ -1,15 +1,17 @@
 import pygame
 WHITE = (255, 255, 255)
+counter = 0
  
 class SquareNode(pygame.sprite.Sprite):
     #This class represents a car. It derives from the "Sprite" class in Pygame.
-    
-    def __init__(self, color, width, height,x,y):
+
+    def __init__(self, color, width, height,x,y,cnt):
         # Call the parent class (Sprite) constructor
         super().__init__()
         
         # Pass in the color of the car, and its x and y position, width and height.
         # Set the background color and set it to be transparent
+        self.counter = cnt
         self.image = pygame.Surface([width, height])
         self.image.fill(WHITE)
         self.image.set_colorkey(WHITE)
@@ -28,3 +30,15 @@ class SquareNode(pygame.sprite.Sprite):
 
     def filll(self,color):
         self.image.fill(color)
+
+    def incrementCounter(self):
+        self.counter += 1;
+
+    def getCounter(self):
+        return self.counter
+
+    def isFull(self):
+        if (self.counter == 3):
+            return True
+        else:
+            return False
