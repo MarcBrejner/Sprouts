@@ -3,6 +3,8 @@ import pygame, random
 from pygame.locals import *
 from squareNode import SquareNode
 from linkedList import LinkedList
+from point import Point
+from intersection import *
 
 #Nodes
  
@@ -46,7 +48,7 @@ class SproutsController:
                             # Add the new line to the linked list and draw the line
                             if last_pos is not None:
                                 # Draws a line between the current mouse position and the mouse position from the last frame
-                                tempLst.prepend((last_pos,mouse_position))
+                                tempLst.prepend((last_pos, mouse_position))
                                 tempLst.drawHead(self.disp.screen, self.disp.BLACK)
                             last_pos = mouse_position
                     elif event.type == MOUSEBUTTONUP:
@@ -56,6 +58,8 @@ class SproutsController:
                             if sprite.rect.collidepoint(pos):
                                 if (sprite.isFull()):
                                     print("Illegal move, node is full")
+                                elif (collision(tempLst, permLst)):
+                                    print("Der er fandme fucking kollision")
                                 else:
                                     #TO:DO add check for whether or not counters are full
                                 
@@ -72,6 +76,7 @@ class SproutsController:
                         if (not merged):
                             # TODO: This can erase existing lines, maybe we should fix
                             tempLst.drawLst(self.disp.screen, self.disp.GREEN)
+
 
                         #Reset mouse position, tempList and drawing status on release.
                         mouse_position = (0, 0)

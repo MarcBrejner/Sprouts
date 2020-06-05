@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="point.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="linkedList.py">
       <SubType>Code</SubType>
     </Compile>

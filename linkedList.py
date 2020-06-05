@@ -1,4 +1,5 @@
 import pygame
+from point import Point
 
 # Node class
 class Node:
@@ -48,7 +49,7 @@ class LinkedList:
     def drawLst(self, image, color):
         curr = self.head
         while curr:
-            pygame.draw.line(image, color, curr.data[0], curr.data[1], 1)
+            pygame.draw.line(image, color, curr.data[0] , curr.data[1], 1)
             curr = curr.next
 
     # Concat two linked lists
