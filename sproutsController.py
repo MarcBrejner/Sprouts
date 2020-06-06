@@ -45,12 +45,15 @@ class SproutsController:
                     elif event.type == MOUSEMOTION:
                         if (drawing):
                             mouse_position = pygame.mouse.get_pos()
-                            # Add the new line to the linked list and draw the line
-                            if last_pos is not None:
-                                # Draws a line between the current mouse position and the mouse position from the last frame
-                                tempLst.prepend((last_pos, mouse_position))
-                                tempLst.drawHead(self.disp.screen, self.disp.BLACK)
-                            last_pos = mouse_position
+                            for sprite in all_sprites_list:
+                                if sprite.rect.collidepoint(mouse_position):
+                                    print("Du er stadig inde i punktet, idiot!")
+                                # Add the new line to the linked list and draw the line
+                                elif last_pos is not None:
+                                    # Draws a line between the current mouse position and the mouse position from the last frame
+                                    tempLst.prepend((last_pos, mouse_position))
+                                    tempLst.drawHead(self.disp.screen, self.disp.BLACK)
+                                last_pos = mouse_position
                     elif event.type == MOUSEBUTTONUP:
                         #When mouse is released, checks if mouse is over a node
                         pos = pygame.mouse.get_pos()
@@ -107,6 +110,6 @@ class SproutsController:
                 self.disp.updateScreen(pygame)
               
                 #Number of frames per secong e.g. 60
-                clock.tick(60)
+                clock.tick(120)
 
         pygame.quit()
