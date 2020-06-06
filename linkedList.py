@@ -5,7 +5,7 @@ from point import Point
 class Node:
 
     # Initialize node
-    def __init__(self, data=None, next=None):
+    def __init__(self, data, next):
         self.data = data
         self.next = next
 
