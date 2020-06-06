@@ -10,6 +10,7 @@ class SproutsDisplay:
 
     def __init__(self, screenwidth, screenheight,pygame):
         size = (screenwidth, screenheight)
+        self.size = size
         self.screen = pygame.display.set_mode(size)
         pygame.display.set_caption("Sprouts")
         self.screen.fill(SproutsDisplay.GREEN)

@@ -6,4 +6,5 @@ pygame.init()
 
 disp = SproutsDisplay(400,500,pygame)
 controller = SproutsController(pygame,disp)
+controller.initializeGameState("initialize.txt",controller.all_sprites_list)
 controller.GameLoop()
