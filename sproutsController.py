@@ -47,7 +47,7 @@ class SproutsController:
                     elif event.type == MOUSEMOTION:
                         if (drawing):
                             pos = pygame.mouse.get_pos()
-                            for sprite in all_sprites_list:
+                            for sprite in self.all_sprites_list:
                                 if sprite.rect.collidepoint(pos):
                                     isInsideNode = True
                                 else:
@@ -111,7 +111,7 @@ class SproutsController:
         
                 #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
                 if (drawPointsOnce):
-                    all_sprites_list.draw(self.disp.screen)
+                    self.all_sprites_list.draw(self.disp.screen)
                     drawPointsOnce = False
                 
                 self.disp.updateScreen(pygame)
