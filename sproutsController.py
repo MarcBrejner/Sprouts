@@ -16,6 +16,8 @@ class SproutsController:
     def __init__(self,pygame,disp):
         self.disp = disp
         self.pygame = pygame
+        self.all_sprites_list = pygame.sprite.Group()
+
 
     #Allowing the user to close the window...
     def GameLoop(self):
@@ -30,9 +32,7 @@ class SproutsController:
         permLst = LinkedList()
         tempLst = LinkedList()
 
-        all_sprites_list = pygame.sprite.Group()
-        all_sprites_list.add(SquareNode(self.disp.RED, 20, 20,100,400, 0))  
-        all_sprites_list.add(SquareNode(self.disp.RED, 20, 20,200,300, 0))
+        
 
         carryOn = True
         clock=pygame.time.Clock()
@@ -45,7 +45,7 @@ class SproutsController:
                     elif event.type == MOUSEMOTION:
                         if (drawing):
                             mouse_position = pygame.mouse.get_pos()
-                            for sprite in all_sprites_list:
+                            for sprite in self.all_sprites_list:
                                 if sprite.rect.collidepoint(mouse_position):
                                     print("Du er stadig inde i punktet, idiot!")
                                 # Add the new line to the linked list and draw the line
@@ -57,7 +57,7 @@ class SproutsController:
                     elif event.type == MOUSEBUTTONUP:
                         #When mouse is released, checks if mouse is over a node
                         pos = pygame.mouse.get_pos()
-                        for sprite in all_sprites_list:
+                        for sprite in self.all_sprites_list:
                             if sprite.rect.collidepoint(pos):
                                 if (sprite.isFull()):
                                     print("Illegal move, node is full")
@@ -90,7 +90,7 @@ class SproutsController:
                     elif event.type == MOUSEBUTTONDOWN:
                         #When mouse is pressed, checks if mouse is over a node, if so start drawing.
                         pos = pygame.mouse.get_pos()
-                        for sprite in all_sprites_list:
+                        for sprite in self.all_sprites_list:
                             if sprite.rect.collidepoint(pos):
                                 if (sprite.isFull()):
                                     print("Illegal move, node is full")
@@ -102,10 +102,10 @@ class SproutsController:
                 #Can draw rectangles on mouse click, TODO: when clicking a rectangle - draw a line to another rectangle.        
                 
                 #Game Logic
-                all_sprites_list.update()
+                self.all_sprites_list.update()
         
                 #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
-                all_sprites_list.draw(self.disp.screen)
+                self.all_sprites_list.draw(self.disp.screen)
                 
                 self.disp.updateScreen(pygame)
               
@@ -113,3 +113,26 @@ class SproutsController:
                 clock.tick(120)
 
         pygame.quit()
+
+    def initializeGameState(self, filename,spriteList):
+        margin = 100
+        y = 1
+        x = 1
+        firstRead = False
+        f = open(filename,"r")
+        lines = f.readlines()
+        for line in lines:
+            if not(firstRead):
+                n = int(line)
+                for i in range(1,n+1):
+                    spriteList.add(SquareNode(self.disp.RED, 20, 20, (margin*x),(margin*y), 0, i))
+                    x+=1
+                    if ((margin*x)) >= (self.disp.size[0]):
+                        x = 1
+                        y += 1
+                firstRead = True
+                print("Done med placering")
+                #init edges between nodes as specificed, and check legality
+
+    
+            
