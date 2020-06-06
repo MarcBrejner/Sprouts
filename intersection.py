@@ -48,7 +48,7 @@ def other_collision(tempLst, permLst):
             if (intersect(curr_segment.data[0], curr_segment.data[1], curr_permLst.data[0], curr_permLst.data[1])):
                 print("Collision with other line")
                 collision_bool = True
-                break
+                return collision_bool
             curr_permLst = curr_permLst.next
         curr_segment = curr_segment.next
     return collision_bool
@@ -66,7 +66,7 @@ def self_collision(tempLst):
             elif (intersect(curr_segment.data[0], curr_segment.data[1], curr_tempLst2.data[0], curr_tempLst2.data[1])):
                 print("COLLISION ")
                 collision_bool = True
-                break
+                return collision_bool
             curr_tempLst2 = curr_tempLst2.next
         curr_segment = curr_segment.next
     return collision_bool
