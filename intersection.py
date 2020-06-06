@@ -1,12 +1,12 @@
 def subtract(p1, p2):
     x1,y1 = p1
     x2,y2 = p2
-    return (abs(x1 - x2), abs(y1 - y2))
+    return (x1 - x2, y1 - y2)
 
 def cross_product(p1, p2):
     x1, x2 = p1
     y1, y2 = p2
-    return x1 * y2 - x2 * y1
+    return float(x1 * y2 - x2 * y1)
 
 def direction(p1, p2, p3):
     return cross_product(subtract(p3, p1), subtract(p2, p1))
@@ -41,15 +41,16 @@ def intersect(p1, p2, p3, p4):
 # Checker hvert linje segment i den nye linje, mod hvert linje segment i på skærmen for kollision
 def other_collision(tempLst, permLst):
     collision_bool = False
-    curr_tempLst = tempLst.head
-    while curr_tempLst:
+    curr_segment = tempLst.head
+    while curr_segment:
         curr_permLst = permLst.head
         while curr_permLst:
-            if (intersect(curr_tempLst.data[0], curr_tempLst.data[1], curr_permLst.data[0], curr_permLst.data[1])):
+            if (intersect(curr_segment.data[0], curr_segment.data[1], curr_permLst.data[0], curr_permLst.data[1])):
+                print("Collision with other line")
                 collision_bool = True
-                break
+                return collision_bool
             curr_permLst = curr_permLst.next
-        curr_tempLst = curr_tempLst.next
+        curr_segment = curr_segment.next
     return collision_bool
 
 
@@ -59,12 +60,13 @@ def self_collision(tempLst):
     while curr_segment:
         curr_tempLst2 = curr_segment.next
         while curr_tempLst2:
-            if (curr_segment.next == curr_tempLst2 and curr_segment.data[0] == curr_tempLst2.data[1]):
+            if (curr_segment.next == curr_tempLst2):
                 curr_tempLst2 = curr_tempLst2.next
                 continue
             elif (intersect(curr_segment.data[0], curr_segment.data[1], curr_tempLst2.data[0], curr_tempLst2.data[1])):
+                print("COLLISION ")
                 collision_bool = True
-                break
+                return collision_bool
             curr_tempLst2 = curr_tempLst2.next
         curr_segment = curr_segment.next
     return collision_bool
