@@ -35,6 +35,7 @@ class SproutsController:
         all_sprites_list = pygame.sprite.Group()
         all_sprites_list.add(SquareNode(self.disp.RED, 20, 20,100,400, 0))  
         all_sprites_list.add(SquareNode(self.disp.RED, 20, 20,200,300, 0))
+        all_sprites_list.add(SquareNode(self.disp.RED, 20, 20,300,100, 0))
 
         carryOn = True
         clock=pygame.time.Clock()
@@ -50,6 +51,7 @@ class SproutsController:
                             for sprite in all_sprites_list:
                                 if sprite.rect.collidepoint(pos):
                                     isInsideNode = True
+                                    break
                                 else:
                                     isInsideNode = False
                             # Add the new line to the linked list and draw the line
@@ -101,7 +103,6 @@ class SproutsController:
                                 else:
                                     #save pressed node
                                     tempNode = sprite
-                                    isInsideNode = True
                                     drawing = True
 
                 #Can draw rectangles on mouse click, TODO: when clicking a rectangle - draw a line to another rectangle.        
