@@ -26,7 +26,7 @@ class SproutsController:
         merged = False
         last_pos = None
         drawPointsOnce = True
-        isInsideNode = False
+        isInsideNode = True
 
         #LinkedList
         permLst = LinkedList()
@@ -47,10 +47,11 @@ class SproutsController:
                     elif event.type == MOUSEMOTION:
                         if (drawing):
                             pos = pygame.mouse.get_pos()
-                            if tempNode.rect.collidepoint(pos):
-                                isInsideNode = True
-                            else:
-                                isInsideNode = False
+                            for sprite in all_sprites_list:
+                                if sprite.rect.collidepoint(pos):
+                                    isInsideNode = True
+                                else:
+                                    isInsideNode = False
                             # Add the new line to the linked list and draw the line
                             if last_pos is not None and not isInsideNode:
                                     # Draws a line between the current mouse position and the mouse position from the last frame
