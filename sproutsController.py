@@ -28,7 +28,6 @@ class SproutsController:
         drawPointsOnce = True
         isInsideNode = True     #Won't draw lines while this is true
         exitedNode = False      #Ignores clicking inside a node to increase it's degree
-        nodesHitCounter = 0     #Check whether a line went into more than 2 nodes, if so, then it should be deleted
 
         #LinkedList
         permLst = LinkedList()
@@ -71,6 +70,8 @@ class SproutsController:
                                     print("Illegal move, node is full")
                                 elif (collision(tempLst, permLst)):
                                     print("Der er fandme fucking kollision")
+                                elif (disconnected(tempLst)):
+                                    print("Du må ikke tegne over andre punkter... Peanut brain")
                                 elif exitedNode:
                                     #TO:DO add check for whether or not counters are full
                                 

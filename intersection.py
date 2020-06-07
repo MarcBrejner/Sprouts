@@ -73,3 +73,14 @@ def self_collision(tempLst):
 
 def collision(tempLst, permLst):
     return other_collision(tempLst, permLst) or self_collision(tempLst)
+
+def disconnected(tempLst):
+    notConnected = False
+    curr_segment = tempLst.head
+    while curr_segment.next:
+        curr_next_segment = curr_segment.next
+        if not (curr_segment.data[0] == curr_next_segment.data[1]):
+            notConnected = True
+            return notConnected
+        curr_segment = curr_segment.next
+    return notConnected
