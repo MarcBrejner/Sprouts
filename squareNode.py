@@ -39,7 +39,7 @@ class SquareNode(pygame.sprite.Sprite):
         return self.counter
 
     def isFull(self):
-        if (self.counter == 3):
+        if (self.counter >= 3):
             return True
         else:
             return False
