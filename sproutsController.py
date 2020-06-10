@@ -5,6 +5,11 @@ from squareNode import SquareNode
 from linkedList import LinkedList
 from point import Point
 from intersection import *
+import networkx as nx
+import numpy as np
+from grid import Grid
+from itertools import product
+
 
 
 #Nodes
@@ -27,6 +32,8 @@ class SproutsController:
         global labelCounter
 
         #FIELDS
+
+
         mouse_position = (0, 0)
         drawing = False
         merged = False          #This boolean is checked to make sure that the drawn line was accepted
@@ -83,6 +90,7 @@ class SproutsController:
                                     #TO:DO add check for whether or not counters are full
                                 
                                     #Add edge to perm list of edges.
+
                                     permLst.merge(tempLst)
                                     merged = True
 
