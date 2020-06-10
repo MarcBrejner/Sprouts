@@ -5,8 +5,8 @@ from itertools import product
 class Grid():
     def __init__(self, width, height):
         #G = nx.grid_2d_graph(self.disp.size[0],self.disp.size[1])
-        self.G = nx.grid_2d_graph([width,height])
-        print(list(G.nodes))
+        self.G = nx.grid_2d_graph(width,height)
+        print(list(self.G.nodes))
 
     #https://stackoverflow.com/questions/49551440/python-all-points-on-circle-given-radius-and-center
     def points_in_circle_np(radius, x0=0, y0=0, ):
@@ -26,11 +26,25 @@ class Grid():
                 yield from set(((x, y), (x, -y), (-x, y), (-x, -y),))
     
 
-    def block_nodes(lst,G):
+    def block_nodes(lst,Gr):
         head = lst.head
         while head:
-            G.remove_nodes_from(points_in_circle_np(3,head.data[0],head.data[1]))
+            #We only use the start point of a segment because the circle is big enough
+            x,y = head.data[0]
+            Gr.G.remove_nodes_from(Grid.points_in_circle_np(3,x,y))
             head = head.next
+
+    def find_path(start,end,lst,Gr):
+        try:
+           path = nx.dijkstra_path(Gr.G,start,end)
+        except:
+           print("Path not available")
+           return
+        last_point = start
+        for point in path:
+            lst.prepend((last_point,point))
+            last_point = point
+
         
         #Q = Grid.points_in_circle_np(5,6,6)
         #print("nodes in Q")
