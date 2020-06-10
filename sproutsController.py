@@ -119,7 +119,10 @@ class SproutsController:
                         if (placeNewPoint):
                             print("Nu skal der sgu laves punkter fyr")
                             position_of_new_sprite = closest_point(pos, tempLst, beginningNode, endNode, nodeSize)
-                            self.all_sprites_list.add(SquareNode(self.disp.RED, nodeSize, nodeSize, position_of_new_sprite[0]-nodeSize/2, position_of_new_sprite[1]-nodeSize/2, 2, labelCounter))
+                            try:
+                                self.all_sprites_list.add(SquareNode(self.disp.RED, nodeSize, nodeSize, position_of_new_sprite[0]-nodeSize/2, position_of_new_sprite[1]-nodeSize/2, 2, labelCounter))
+                            except:
+                                print("Der kan ikke laves et nyt punkt på linjen")
                             labelCounter += 1
                             placeNewPoint = False
                             tempLst = LinkedList()
@@ -171,5 +174,5 @@ class SproutsController:
                 firstRead = True
                 print("Done med placering")
                 #init edges between nodes as specificed, and check legality
-    
+        
             

@@ -1,6 +1,7 @@
 from scipy.spatial import distance #pip3 install scipy
 import numpy as np
 import math
+from grid import Grid
 
 def subtract(p1, p2):
     x1,y1 = p1
@@ -97,26 +98,28 @@ def distance(point1, point2):
     return float(math.sqrt((x2-x1)**2+(y2-y1)**2))
     
 # Only have to use one of the points in each segment, since the segments overlap in their starting and ending points
-def closest_point(mouse_pos, lst, node1, node2, nodeSize):
-    center_node1 = np.subtract(node1.getCoordinates(), (nodeSize/2, nodeSize/2))
-    center_node2 = np.subtract(node2.getCoordinates(), (nodeSize/2, nodeSize/2))
+def closest_point(mouse_pos, lst, startNode, endNode, nodeSize):
+    radius = 30
+    center_startNode = np.subtract(startNode.getCoordinates(), (nodeSize/2, nodeSize/2))
+    center_endNode = np.subtract(endNode.getCoordinates(), (nodeSize/2, nodeSize/2))
+
+    Node_bool = False
 
     shortestDist = 999999999
     curr_segment = lst.head
     closestNode = curr_segment.data[0]
-    temp_segment = lst.head
     while curr_segment:
-        distance0 = distance(curr_segment.data[0], mouse_pos)
-        if(distance0 <= shortestDist):
-            if(distance(curr_segment.data[0], center_node1) > distance(curr_segment.data[0], center_node2)):
-                if(distance(center_node2, curr_segment.data[0]) >= nodeSize):
-                    shortestDist = distance0
-                    closestNode = curr_segment.data[0]
-            else:
-                if(distance(center_node1, curr_segment.data[0]) >= nodeSize):
-                    shortestDist = distance0
-                    closestNode = curr_segment.data[0]
+        #dx_end = abs(curr_segment.data[0][0] - endNode.rect.y-10)
+        #dy_end = abs(curr_segment.data[0][1] - endNode.rect.y-10)
+        #dx_start = abs(curr_segment.data[0][0] - startNode.rect.x-10)
+        #dy_start = abs(curr_segment.data[0][1] - startNode.rect.y-10)
+
+        #if ((dx_end>radius or dy_end>radius) and (dx_start>radius or dy_start>radius)):
+        #    Node_bool = True
+
+        distance_from_click = distance(curr_segment.data[0], mouse_pos)
+        if(distance_from_click <= shortestDist):
+            shortestDist = distance_from_click
+            closestNode = curr_segment.data[0]
         curr_segment = curr_segment.next
     return closestNode
-
-
