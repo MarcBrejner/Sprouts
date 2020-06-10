@@ -15,8 +15,6 @@ from itertools import product
  
 # Add the node to the list of objects
 
- 
-#This will be a list that will contain all the sprites we intend to use in our game.
 class SproutsController:
     def __init__(self,pygame,disp):
         self.disp = disp
@@ -32,16 +30,19 @@ class SproutsController:
 
         mouse_position = (0, 0)
         drawing = False
-        merged = False
+        merged = False          #This boolean is checked to make sure that the drawn line was accepted
         last_pos = None
         drawPointsOnce = True
-        isInsideNode = True
+        isInsideNode = True     #Won't draw lines while this is true
+        exitedNode = False      #Ignores clicking inside a node to increase it's degree
+        nodesHitCounter = 0     #Check whether a line went into more than 2 nodes, if so, then it should be deleted
 
         #LinkedList
         permLst = LinkedList()
         tempLst = LinkedList()
 
-        
+        #This will be a list that will contain all the sprites we intend to use in our game.
+        all_sprites_list = pygame.sprite.Group()
 
         carryOn = True
         clock=pygame.time.Clock()
@@ -56,10 +57,12 @@ class SproutsController:
                             pos = pygame.mouse.get_pos()
                             for sprite in self.all_sprites_list:
                                 if sprite.rect.collidepoint(pos):
+                                    print("Du er stadig inde i node, idiot!")
                                     isInsideNode = True
                                     break
                                 else:
                                     isInsideNode = False
+                                    exitedNode = True
                             # Add the new line to the linked list and draw the line
                             if last_pos is not None and not isInsideNode:
                                     # Draws a line between the current mouse position and the mouse position from the last frame
@@ -71,11 +74,11 @@ class SproutsController:
                         pos = pygame.mouse.get_pos()
                         for sprite in self.all_sprites_list:
                             if sprite.rect.collidepoint(pos):
-                                if (sprite.isFull()):
+                                if (sprite.isFull() or (sprite == tempNode and sprite.getCounter() >= 2)):
                                     print("Illegal move, node is full")
                                 elif (collision(tempLst, permLst)):
                                     print("Der er fandme fucking kollision")
-                                else:
+                                elif exitedNode:
                                     #TO:DO add check for whether or not counters are full
                                 
                                     #Add edge to perm list of edges.
@@ -91,13 +94,13 @@ class SproutsController:
                         # Delete drawn line if it didn't end in a sprite
                         if (not merged):
                             # TODO: This can erase existing lines, maybe we should fix
-                            tempLst.drawLst(self.disp.screen, self.disp.WHITE)
-
+                            tempLst.drawLst(self.disp.screen, self.disp.GREEN)
                         #Reset mouse position, tempList and drawing status on release.
                         mouse_position = (0, 0)
                         last_pos = None
                         drawing = False
                         merged = False
+                        exitedNode = False
                         print(tempLst)
                         tempLst = LinkedList()
                     elif event.type == MOUSEBUTTONDOWN:
@@ -110,10 +113,8 @@ class SproutsController:
                                 else:
                                     #save pressed node
                                     tempNode = sprite
-                                    isInsideNode = True
                                     drawing = True
-
-                #Can draw rectangles on mouse click, TODO: when clicking a rectangle - draw a line to another rectangle.        
+                                    exitedNode = False        
                 
                 #Game Logic
                 self.all_sprites_list.update()
@@ -123,6 +124,8 @@ class SproutsController:
                     self.all_sprites_list.draw(self.disp.screen)
                     drawPointsOnce = False
                 
+                permLst.drawLst(self.disp.screen, self.disp.BLACK)
+
                 self.disp.updateScreen(pygame)
               
                 #Number of frames per secong e.g. 60
@@ -149,8 +152,5 @@ class SproutsController:
                 firstRead = True
                 print("Done med placering")
                 #init edges between nodes as specificed, and check legality
-
-
-
     
             
