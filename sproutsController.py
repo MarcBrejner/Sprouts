@@ -32,9 +32,12 @@ class SproutsController:
         global labelCounter
 
         #FIELDS
+        G = Grid(self.disp.size[0],self.disp.size[1])
 
-
+        LEFT = 1
+        RIGHT = 3
         mouse_position = (0, 0)
+        pathfinding = False
         drawing = False
         merged = False          #This boolean is checked to make sure that the drawn line was accepted
         last_pos = None
@@ -58,7 +61,44 @@ class SproutsController:
                 for event in pygame.event.get():
                     if event.type==pygame.QUIT:
                         carryOn=False
-                    elif event.type == MOUSEMOTION:
+                    elif event.type == MOUSEBUTTONDOWN and event.button == RIGHT:
+                        #When right mb is pressed, checks if mouse is over a node, if so save node for pathfinding.
+                        pos = pygame.mouse.get_pos()
+                        for sprite in self.all_sprites_list:
+                            if sprite.rect.collidepoint(pos):
+                                if (sprite.isFull()):
+                                    print("Illegal move, node is full")
+                                elif pathfinding:
+                                    print("TO")
+                                    print(pos)
+                                    print("FINDING PATH...")
+                                    
+                                    
+                                    Grid.find_path(last_pos,pos,tempLst,G) #Find path from prev. node to current node.
+                                    tempLst.drawLst(self.disp.screen, self.disp.PURPLE)
+
+                                    pathfinding = False
+                                    tempNode = None
+
+                                    #remove underlying grid around new edge
+                                    Grid.block_nodes(tempLst,G)
+
+                                    #Accept new edge, TODO: add condition for accepting
+                                    permLst.merge(tempLst)
+                                    merged = True
+                                else:
+                                    #save pressed node
+
+                                    #debug
+                                    print("FROM")
+                                    last_pos = pos
+                                    print(last_pos)
+
+                                    tempNode = sprite
+                                    pathfinding = True #start pathfinding on next click
+                                    
+                         
+                    elif event.type == MOUSEMOTION and pygame.mouse.get_pressed()[0]:
                         if (drawing):
                             pos = pygame.mouse.get_pos()
                             for sprite in self.all_sprites_list:
@@ -75,7 +115,7 @@ class SproutsController:
                                     tempLst.prepend((last_pos, pos))
                                     tempLst.drawHead(self.disp.screen, self.disp.BLACK)
                             last_pos = pos
-                    elif event.type == MOUSEBUTTONUP:
+                    elif event.type == MOUSEBUTTONUP and event.button == LEFT:
                         #When mouse is released, checks if mouse is over a node
                         pos = pygame.mouse.get_pos()
                         for sprite in self.all_sprites_list:
@@ -90,6 +130,7 @@ class SproutsController:
                                     #TO:DO add check for whether or not counters are full
                                 
                                     #Add edge to perm list of edges.
+                                    Grid.block_nodes(tempLst,G)
 
                                     permLst.merge(tempLst)
                                     merged = True
@@ -113,7 +154,8 @@ class SproutsController:
                         merged = False
                         exitedNode = False
                         print(tempLst)
-                    elif event.type == MOUSEBUTTONDOWN:
+                        tempLst = LinkedList()
+                    elif event.type == MOUSEBUTTONDOWN and event.button == LEFT:
                         #When mouse is pressed, checks if mouse is over a node, if so start drawing.
                         pos = pygame.mouse.get_pos()
                         if (placeNewPoint):
@@ -174,5 +216,4 @@ class SproutsController:
                 firstRead = True
                 print("Done med placering")
                 #init edges between nodes as specificed, and check legality
-        
             
