@@ -38,6 +38,9 @@ class SquareNode(pygame.sprite.Sprite):
     def getCounter(self):
         return self.counter
 
+    def getCoordinates(self):
+        return (self.rect.x, self.rect.y)
+
     def isFull(self):
         if (self.counter >= 3):
             return True

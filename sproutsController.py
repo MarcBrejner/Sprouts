@@ -6,9 +6,13 @@ from linkedList import LinkedList
 from point import Point
 from intersection import *
 
+
 #Nodes
  
 # Add the node to the list of objects
+
+labelCounter = 0
+nodeSize = 20
 
 class SproutsController:
     def __init__(self,pygame,disp):
@@ -19,6 +23,8 @@ class SproutsController:
 
     #Allowing the user to close the window...
     def GameLoop(self):
+        global nodeSize
+        global labelCounter
 
         #FIELDS
         mouse_position = (0, 0)
@@ -28,6 +34,7 @@ class SproutsController:
         drawPointsOnce = True
         isInsideNode = True     #Won't draw lines while this is true
         exitedNode = False      #Ignores clicking inside a node to increase it's degree
+        placeNewPoint = False
 
         #LinkedList
         permLst = LinkedList()
@@ -66,7 +73,7 @@ class SproutsController:
                         pos = pygame.mouse.get_pos()
                         for sprite in self.all_sprites_list:
                             if sprite.rect.collidepoint(pos):
-                                if (sprite.isFull() or (sprite == tempNode and sprite.getCounter() >= 2)):
+                                if (sprite.isFull() or (sprite == beginningNode and sprite.getCounter() >= 2)):
                                     print("Illegal move, node is full")
                                 elif (collision(tempLst, permLst)):
                                     print("Der er fandme fucking kollision")
@@ -79,11 +86,14 @@ class SproutsController:
                                     permLst.merge(tempLst)
                                     merged = True
 
+                                    endNode = sprite
+
                                     #increment number of attached lines to both nodes
                                     sprite.incrementCounter()
-                                    tempNode.incrementCounter()
+                                    beginningNode.incrementCounter()
 
                                     print(sprite.getCounter())
+                                    placeNewPoint = True
                         # Delete drawn line if it didn't end in a sprite
                         if (not merged):
                             # TODO: This can erase existing lines, maybe we should fix
@@ -95,29 +105,37 @@ class SproutsController:
                         merged = False
                         exitedNode = False
                         print(tempLst)
-                        tempLst = LinkedList()
                     elif event.type == MOUSEBUTTONDOWN:
                         #When mouse is pressed, checks if mouse is over a node, if so start drawing.
                         pos = pygame.mouse.get_pos()
-                        for sprite in self.all_sprites_list:
-                            if sprite.rect.collidepoint(pos):
-                                if (sprite.isFull()):
-                                    print("Illegal move, node is full")
-                                else:
-                                    #save pressed node
-                                    tempNode = sprite
-                                    drawing = True
-                                    exitedNode = False        
+                        if (placeNewPoint):
+                            print("Nu skal der sgu laves punkter fyr")
+                            position_of_new_sprite = closest_point(pos, tempLst, beginningNode, endNode, nodeSize)
+                            self.all_sprites_list.add(SquareNode(self.disp.RED, nodeSize, nodeSize, position_of_new_sprite[0]-nodeSize/2, position_of_new_sprite[1]-nodeSize/2, 2, labelCounter))
+                            labelCounter += 1
+                            placeNewPoint = False
+                            tempLst = LinkedList()
+                        else:
+                            for sprite in self.all_sprites_list:
+                                if sprite.rect.collidepoint(pos):
+                                    if (sprite.isFull()):
+                                        print("Illegal move, node is full")
+                                    else:
+                                        #save pressed node
+                                        beginningNode = sprite
+                                        drawing = True
+                                        exitedNode = False
+                                        placeNewPoint = False
                 
                 #Game Logic
                 self.all_sprites_list.update()
+
+                permLst.drawLst(self.disp.screen, self.disp.BLACK)
         
                 #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
-                if (drawPointsOnce):
-                    self.all_sprites_list.draw(self.disp.screen)
-                    drawPointsOnce = False
-                
-                permLst.drawLst(self.disp.screen, self.disp.BLACK)
+                #if (drawPointsOnce):
+                self.all_sprites_list.draw(self.disp.screen)
+                    #drawPointsOnce = False 
 
                 self.disp.updateScreen(pygame)
               
@@ -136,8 +154,8 @@ class SproutsController:
         for line in lines:
             if not(firstRead):
                 n = int(line)
-                for i in range(1,n+1):
-                    spriteList.add(SquareNode(self.disp.RED, 20, 20, (margin*x),(margin*y), 0, i))
+                for labelCounter in range(1,n+1):
+                    spriteList.add(SquareNode(self.disp.RED, nodeSize, nodeSize, (margin*x),(margin*y), 0, labelCounter))
                     x+=1
                     if ((margin*x)) >= (self.disp.size[0]):
                         x = 1
