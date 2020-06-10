@@ -65,3 +65,4 @@ class LinkedList:
         while curr:
             self.prepend(curr.data)
             curr = curr.next
+
