@@ -5,6 +5,11 @@ from squareNode import SquareNode
 from linkedList import LinkedList
 from point import Point
 from intersection import *
+import networkx as nx
+import numpy as np
+from grid import Grid
+from itertools import product
+
 
 #Nodes
  
@@ -23,6 +28,8 @@ class SproutsController:
     def GameLoop(self):
 
         #FIELDS
+
+
         mouse_position = (0, 0)
         drawing = False
         merged = False
@@ -50,6 +57,7 @@ class SproutsController:
                             for sprite in self.all_sprites_list:
                                 if sprite.rect.collidepoint(pos):
                                     isInsideNode = True
+                                    break
                                 else:
                                     isInsideNode = False
                             # Add the new line to the linked list and draw the line
@@ -71,6 +79,7 @@ class SproutsController:
                                     #TO:DO add check for whether or not counters are full
                                 
                                     #Add edge to perm list of edges.
+
                                     permLst.merge(tempLst)
                                     merged = True
 
@@ -140,6 +149,8 @@ class SproutsController:
                 firstRead = True
                 print("Done med placering")
                 #init edges between nodes as specificed, and check legality
+
+
 
     
             
