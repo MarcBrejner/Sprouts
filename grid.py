@@ -6,7 +6,6 @@ class Grid():
     def __init__(self, width, height):
         #G = nx.grid_2d_graph(self.disp.size[0],self.disp.size[1])
         self.G = nx.grid_2d_graph(width,height)
-        print(list(self.G.nodes))
 
     #https://stackoverflow.com/questions/49551440/python-all-points-on-circle-given-radius-and-center
     def points_in_circle_np(radius, x0=0, y0=0, ):

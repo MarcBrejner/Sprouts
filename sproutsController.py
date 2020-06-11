@@ -11,13 +11,23 @@ from grid import Grid
 from itertools import product
 
 
-
 #Nodes
  
 # Add the node to the list of objects
 
 labelCounter = 0
 nodeSize = 20
+LEFT = 1
+RIGHT = 3
+mouse_position = (0, 0)
+pathfinding = False
+drawing = False
+merged = False          #This boolean is checked to make sure that the drawn line was accepted
+last_pos = None
+drawPointsOnce = True
+isInsideNode = True     #Won't draw lines while this is true
+exitedNode = False      #Ignores clicking inside a node to increase it's degree
+placeNewPoint = False
 
 class SproutsController:
     def __init__(self,pygame,disp):
@@ -30,21 +40,22 @@ class SproutsController:
     def GameLoop(self):
         global nodeSize
         global labelCounter
+        global LEFT
+        global RIGHT
+        global mouse_position
+        global pathfinding
+        global drawing
+        global merged
+        global last_pos
+        global drawPointsOnce
+        global isInsideNode
+        global exitedNode
+        global placeNewPoint
+
+        self.disp.screen.fill(self.disp.GREEN)
 
         #FIELDS
         G = Grid(self.disp.size[0],self.disp.size[1])
-
-        LEFT = 1
-        RIGHT = 3
-        mouse_position = (0, 0)
-        pathfinding = False
-        drawing = False
-        merged = False          #This boolean is checked to make sure that the drawn line was accepted
-        last_pos = None
-        drawPointsOnce = True
-        isInsideNode = True     #Won't draw lines while this is true
-        exitedNode = False      #Ignores clicking inside a node to increase it's degree
-        placeNewPoint = False
 
         #LinkedList
         permLst = LinkedList()
@@ -77,6 +88,9 @@ class SproutsController:
                                     Grid.find_path(last_pos,pos,tempLst,G) #Find path from prev. node to current node.
                                     tempLst.drawLst(self.disp.screen, self.disp.PURPLE)
 
+                                    tempNode.incrementCounter()
+                                    sprite.incrementCounter()
+
                                     pathfinding = False
                                     tempNode = None
 
@@ -84,8 +98,7 @@ class SproutsController:
                                     Grid.block_nodes(tempLst,G)
 
                                     #Accept new edge, TODO: add condition for accepting
-                                    permLst.merge(tempLst)
-                                    merged = True
+                                    permLst.merge(tempLst)    
                                 else:
                                     #save pressed node
 
@@ -147,24 +160,20 @@ class SproutsController:
                         if (not merged):
                             # TODO: This can erase existing lines, maybe we should fix
                             tempLst.drawLst(self.disp.screen, self.disp.GREEN)
+                            tempLst = LinkedList()
                         #Reset mouse position, tempList and drawing status on release.
                         mouse_position = (0, 0)
                         last_pos = None
                         drawing = False
                         merged = False
                         exitedNode = False
-                        print(tempLst)
-                        tempLst = LinkedList()
                     elif event.type == MOUSEBUTTONDOWN and event.button == LEFT:
                         #When mouse is pressed, checks if mouse is over a node, if so start drawing.
                         pos = pygame.mouse.get_pos()
                         if (placeNewPoint):
                             print("Nu skal der sgu laves punkter fyr")
                             position_of_new_sprite = closest_point(pos, tempLst, beginningNode, endNode, nodeSize)
-                            try:
-                                self.all_sprites_list.add(SquareNode(self.disp.RED, nodeSize, nodeSize, position_of_new_sprite[0]-nodeSize/2, position_of_new_sprite[1]-nodeSize/2, 2, labelCounter))
-                            except:
-                                print("Der kan ikke laves et nyt punkt på linjen")
+                            self.all_sprites_list.add(SquareNode(self.disp.RED, nodeSize, nodeSize, position_of_new_sprite[0]-nodeSize/2, position_of_new_sprite[1]-nodeSize/2, 2, labelCounter))
                             labelCounter += 1
                             placeNewPoint = False
                             tempLst = LinkedList()
@@ -216,4 +225,49 @@ class SproutsController:
                 firstRead = True
                 print("Done med placering")
                 #init edges between nodes as specificed, and check legality
+
+    def game_intro(self):
+        intro = True
+
+        while intro:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
             
+            #Ready the menu screen
+            self.disp.screen.fill(self.disp.WHITE)
+            largeText = pygame.font.Font("freesansbold.ttf", 100)
+            TextSurf, TextRect = SproutsController.text_objects("Sprouts", largeText)
+            TextRect.center = ((self.disp.size[0]/2, self.disp.size[1]/4))
+            self.disp.screen.blit(TextSurf, TextRect)
+
+            self.button("START", 150, 250, 100, 50, self.disp.GREEN, self.disp.LIGHT_GREEN, self.GameLoop)
+            self.button("QUIT", 150, 350, 100, 50, self.disp.RED, self.disp.LIGHT_RED, self.QuitGame)
+            pygame.display.update()
+
+    def QuitGame(self):
+        pygame.quit()
+        quit()
+
+    def text_objects(text, font):
+        textSurface = font.render(text, True, (0, 0, 0))
+        return textSurface, textSurface.get_rect()
+
+    def button(self, msg, pos_x, pos_y, width, height, i_color, a_color, action=None):
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+        #Hightlight button, when mouse hover
+        if pos_x+width > mouse[0] > pos_x and pos_y+height > mouse[1] > pos_y:
+            pygame.draw.rect(self.disp.screen, i_color, (pos_x, pos_y, width, height))
+
+            if click[0] == 1 and action != None:
+                action()
+        else: 
+            pygame.draw.rect(self.disp.screen, a_color, (pos_x, pos_y, width, height))
+
+        smallText = pygame.font.Font("freesansbold.ttf", 20)
+        textSurf, textRect = SproutsController.text_objects(msg, smallText)
+        textRect.center = ((pos_x+(width/2)), (pos_y+(height/2)))
+        self.disp.screen.blit(textSurf, textRect)

@@ -18,7 +18,9 @@ class SquareNode(pygame.sprite.Sprite):
         self.image.set_colorkey(WHITE)
  
         # Draw the car (a rectangle!)
-        pygame.draw.rect(self.image, color, [0, 0, width, height])
+        #pygame.draw.rect(self.image, color, [0, 0, width, height])
+
+        pygame.draw.circle(self.image, color, (width//2, height//2), 10)
         
         
         # Instead we could load a proper pciture of a car...
