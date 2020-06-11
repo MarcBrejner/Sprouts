@@ -109,17 +109,27 @@ def closest_point(mouse_pos, lst, startNode, endNode, nodeSize):
     curr_segment = lst.head
     closestNode = curr_segment.data[0]
     while curr_segment:
-        #dx_end = abs(curr_segment.data[0][0] - endNode.rect.y-10)
-        #dy_end = abs(curr_segment.data[0][1] - endNode.rect.y-10)
-        #dx_start = abs(curr_segment.data[0][0] - startNode.rect.x-10)
-        #dy_start = abs(curr_segment.data[0][1] - startNode.rect.y-10)
+        dx_end = abs(curr_segment.data[0][0] - endNode.rect.x-10)
+        dy_end = abs(curr_segment.data[0][1] - endNode.rect.y-10)
+        dx_start = abs(curr_segment.data[0][0] - startNode.rect.x-10)
+        dy_start = abs(curr_segment.data[0][1] - startNode.rect.y-10)
 
-        #if ((dx_end>radius or dy_end>radius) and (dx_start>radius or dy_start>radius)):
-        #    Node_bool = True
+        if (distance(mouse_pos, center_startNode) > distance(mouse_pos, center_endNode)):
+            if (dx_end>radius or dy_end>radius):
+                Node_bool = True
+            else:
+                Node_bool = False
+        elif(distance(mouse_pos, center_startNode) < distance(mouse_pos, center_endNode)):
+            if (dx_start>radius or dy_start>radius):
+                Node_bool = True
+            else:
+                Node_bool = False
 
         distance_from_click = distance(curr_segment.data[0], mouse_pos)
-        if(distance_from_click <= shortestDist):
+        if(distance_from_click <= shortestDist and Node_bool):
             shortestDist = distance_from_click
             closestNode = curr_segment.data[0]
         curr_segment = curr_segment.next
+    if(closestNode == lst.head.data[0]):
+        print("Der kunne ikke findes et punkt")
     return closestNode

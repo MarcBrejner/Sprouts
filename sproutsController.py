@@ -232,8 +232,7 @@ class SproutsController:
         while intro:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
+                    self.QuitGame()
             
             #Ready the menu screen
             self.disp.screen.fill(self.disp.WHITE)
@@ -242,8 +241,8 @@ class SproutsController:
             TextRect.center = ((self.disp.size[0]/2, self.disp.size[1]/4))
             self.disp.screen.blit(TextSurf, TextRect)
 
-            self.button("START", 150, 250, 100, 50, self.disp.GREEN, self.disp.LIGHT_GREEN, self.GameLoop)
-            self.button("QUIT", 150, 350, 100, 50, self.disp.RED, self.disp.LIGHT_RED, self.QuitGame)
+            self.button("START", self.disp.size[0]/2-50, self.disp.size[1]/2-50, 100, 50, self.disp.GREEN, self.disp.LIGHT_GREEN, self.GameLoop)
+            self.button("QUIT", self.disp.size[0]/2-50, self.disp.size[1]/2+100-50, 100, 50, self.disp.RED, self.disp.LIGHT_RED, self.QuitGame)
             pygame.display.update()
 
     def QuitGame(self):
