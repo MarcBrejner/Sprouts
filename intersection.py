@@ -114,7 +114,7 @@ def closest_point(mouse_pos, lst, startNode, endNode, nodeSize):
         dx_start = abs(curr_segment.data[0][0] - startNode.rect.x-10)
         dy_start = abs(curr_segment.data[0][1] - startNode.rect.y-10)
 
-        if (distance(mouse_pos, center_startNode) > distance(mouse_pos, center_endNode)):
+        if (distance(mouse_pos, center_startNode) >= distance(mouse_pos, center_endNode)):
             if (dx_end>radius or dy_end>radius):
                 Node_bool = True
             else:

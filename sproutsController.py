@@ -28,6 +28,8 @@ drawPointsOnce = True
 isInsideNode = True     #Won't draw lines while this is true
 exitedNode = False      #Ignores clicking inside a node to increase it's degree
 placeNewPoint = False
+playerOneName = "Player 1"
+playerTwoName = "Player 2"
 
 class SproutsController:
     def __init__(self,pygame,disp):
@@ -51,6 +53,8 @@ class SproutsController:
         global isInsideNode
         global exitedNode
         global placeNewPoint
+        global playerOneName
+        global playerTwoName
 
         self.disp.screen.fill(self.disp.GREEN)
 
@@ -60,6 +64,8 @@ class SproutsController:
         #LinkedList
         permLst = LinkedList()
         tempLst = LinkedList()
+
+        displayName = playerOneName
 
         #This will be a list that will contain all the sprites we intend to use in our game.
         all_sprites_list = pygame.sprite.Group()
@@ -81,7 +87,7 @@ class SproutsController:
                                     print("Illegal move, node is full")
                                 elif (placeNewPoint):    
                                     print("Place a new point, by left clicking")
-                                elif pathfinding and not (sprite == tempNode):
+                                elif pathfinding and not (sprite == beginningNode):
                                     print("TO")
                                     print(pos)
 
@@ -201,6 +207,10 @@ class SproutsController:
                             beginningNode = None
                             endNode = None
                             tempLst = LinkedList()
+                            if (displayName == playerOneName):
+                                displayName = playerTwoName
+                            else:
+                                displayName = playerOneName
                         elif(pathfinding):
                             print("Finish path finding by right clicking on a node")
                         else:
@@ -224,6 +234,8 @@ class SproutsController:
                 #if (drawPointsOnce):
                 self.all_sprites_list.draw(self.disp.screen)
                     #drawPointsOnce = False 
+
+                self.turnTracker(displayName)
 
                 self.disp.updateScreen(pygame)
               
@@ -271,7 +283,8 @@ class SproutsController:
             self.disp.screen.blit(TextSurf, TextRect)
 
             self.button("START", self.disp.size[0]/2-50, self.disp.size[1]/2-50, 100, 50, self.disp.GREEN, self.disp.LIGHT_GREEN, self.GameLoop)
-            self.button("QUIT", self.disp.size[0]/2-50, self.disp.size[1]/2+100-50, 100, 50, self.disp.RED, self.disp.LIGHT_RED, self.QuitGame)
+            self.button("Input names", self.disp.size[0]/2-50, self.disp.size[1]/2+100-50, 100, 50, self.disp.BLUE, self.disp.LIGHT_BLUE)
+            self.button("QUIT", self.disp.size[0]/2-50, self.disp.size[1]/2+200-50, 100, 50, self.disp.RED, self.disp.LIGHT_RED, self.QuitGame)
             pygame.display.update()
 
     def QuitGame(self):
@@ -309,3 +322,9 @@ class SproutsController:
         labelCounter += 1
         placeNewPoint = False
         
+    def turnTracker(self, displayName):
+        largeText = pygame.font.Font("freesans.ttf", 20)
+        TextSurf, TextRect = SproutsController.text_objects(displayName, largeText)
+        TextRect.center = ((self.disp.size[0]/2, 20))
+        pygame.draw.rect(self.disp.screen, self.disp.GREEN, TextRect)
+        self.disp.screen.blit(TextSurf, TextRect)

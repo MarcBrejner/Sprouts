@@ -9,6 +9,8 @@ class SproutsDisplay:
     RED = (255, 0, 0)
     LIGHT_RED = (200, 0, 0)
     PURPLE = (255, 0, 255)
+    BLUE = (0, 128, 128)
+    LIGHT_BLUE = (0, 0, 200)
 
     def __init__(self, screenwidth, screenheight,pygame):
         size = (screenwidth, screenheight)
