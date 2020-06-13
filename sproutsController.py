@@ -36,6 +36,8 @@ class SproutsController:
         self.disp = disp
         self.pygame = pygame
         self.all_sprites_list = pygame.sprite.Group()
+        self.permLst = LinkedList()
+        self.tempLst = LinkedList()
 
 
     #Allowing the user to close the window...
@@ -62,8 +64,8 @@ class SproutsController:
         G = Grid(self.disp.size[0],self.disp.size[1])
 
         #LinkedList
-        permLst = LinkedList()
-        tempLst = LinkedList()
+        #permLst = LinkedList()
+        #tempLst = LinkedList()
 
         displayName = playerOneName
 
@@ -87,59 +89,40 @@ class SproutsController:
                                     print("Illegal move, node is full")
                                 elif (placeNewPoint):    
                                     print("Place a new point, by left clicking")
-                                elif pathfinding and not (sprite == beginningNode):
+                                elif pathfinding and not (sprite == startNode):
                                     print("TO")
-                                    print(pos)
 
                                     endNode = sprite
-
-                                    H = Grid.pruned_grid(beginningNode,endNode,self.G,5,self.all_sprites_list)
-                                    s = Grid.set_of_circumfering_points(endNode,self.G)
-
-                                    pathfindingPos = Grid.closest_in_set(pos,s)
-                                    print(pathfindingPos)
+                                    print(endNode.getCoordinates())
                                     print("FINDING PATH...")
                                     
-                                    #clean up
-                                    #Grid.remove_node_area(sprite,self.G)
-                                    #Grid.remove_node_area(tempNode,self.G)
+                                    #Grid.find_path(startNode , endNode , self.tempLst , self.G , self.all_sprites_list) #Find path from prev. node to current node.
 
                                     #Grid.pruned_grid(sprite,tempNode,self.G,5,all_sprites_list)
                                     try:
-                                        Grid.find_path(last_pos,pathfindingPos,tempLst,H) #Find path from prev. node to current node.
+                                        Grid.find_path(startNode , endNode , self.tempLst , self.G , self.all_sprites_list) #Find path from prev. node to current node.
                                         placeNewPoint = True
                                     except Exception as e:
                                         print(str(e))
 
-                                    tempLst.drawLst(self.disp.screen, self.disp.PURPLE)
-
-                                    beginningNode.incrementCounter()
-                                    sprite.incrementCounter()
+                                    self.tempLst.drawLst(self.disp.screen, self.disp.PURPLE)
 
                                     pathfinding = False
                                     H = None
 
                                     #remove underlying grid around new edge
-                                    Grid.block_nodes(tempLst,self.G)
+                                    Grid.block_nodes(self.tempLst,self.G)
 
                                     #Accept new edge, TODO: add condition for accepting
-                                    permLst.merge(tempLst)    
+                                    self.permLst.merge(self.tempLst)    
                                 else:
                                     #save pressed node
-                                    beginningNode = sprite
+                                    startNode = sprite
                                     
                                     #debug
                                     print("FROM")
-                                    print(pos)
+                                    print(sprite.getCoordinates())
 
-                                    
-                                    s = Grid.set_of_circumfering_points(beginningNode,self.G)
-                                    last_pos = Grid.closest_in_set(pos,s)
-
-
-                                    print(last_pos)
-
-                                    
                                     pathfinding = True #start pathfinding on next click
                                     
                          
@@ -157,42 +140,42 @@ class SproutsController:
                             # Add the new line to the linked list and draw the line
                             if last_pos is not None and not isInsideNode:
                                     # Draws a line between the current mouse position and the mouse position from the last frame
-                                    tempLst.prepend((last_pos, pos))
-                                    tempLst.drawHead(self.disp.screen, self.disp.BLACK)
+                                    self.tempLst.prepend((last_pos, pos))
+                                    self.tempLst.drawHead(self.disp.screen, self.disp.BLACK)
                             last_pos = pos
                     elif event.type == MOUSEBUTTONUP and event.button == LEFT:
                         #When mouse is released, checks if mouse is over a node
                         pos = pygame.mouse.get_pos()
                         for sprite in self.all_sprites_list:
                             if sprite.rect.collidepoint(pos):
-                                if (sprite.isFull() or (sprite == beginningNode and sprite.getCounter() >= 2)):
+                                if (sprite.isFull() or (sprite == startNode and sprite.getCounter() >= 2)):
                                     print("Illegal move, node is full")
-                                elif (collision(tempLst, permLst)):
+                                elif (collision(self.tempLst, self.permLst)):
                                     print("Der er fandme fucking kollision")
-                                elif (disconnected(tempLst)):
+                                elif (disconnected(self.tempLst)):
                                     print("Du må ikke tegne over andre punkter... Peanut brain")
                                 elif exitedNode:
                                     #TO:DO add check for whether or not counters are full
                                 
                                     #Add edge to perm list of edges.
-                                    Grid.block_nodes(tempLst,self.G)
+                                    Grid.block_nodes(self.tempLst,self.G)
 
-                                    permLst.merge(tempLst)
+                                    self.permLst.merge(self.tempLst)
                                     merged = True
 
                                     endNode = sprite
 
                                     #increment number of attached lines to both nodes
                                     sprite.incrementCounter()
-                                    beginningNode.incrementCounter()
+                                    startNode.incrementCounter()
 
                                     print(sprite.getCounter())
                                     placeNewPoint = True
                         # Delete drawn line if it didn't end in a sprite
                         if (not merged):
                             # TODO: This can erase existing lines, maybe we should fix
-                            tempLst.drawLst(self.disp.screen, self.disp.GREEN)
-                            tempLst = LinkedList()
+                            self.tempLst.drawLst(self.disp.screen, self.disp.GREEN)
+                            self.tempLst = LinkedList()
                         #Reset mouse position, tempList and drawing status on release.
                         mouse_position = (0, 0)
                         last_pos = None
@@ -203,10 +186,10 @@ class SproutsController:
                         #When mouse is pressed, checks if mouse is over a node, if so start drawing.
                         pos = pygame.mouse.get_pos()
                         if (placeNewPoint):
-                            self.newPointOnLine(pos, tempLst, beginningNode, endNode, nodeSize)
-                            beginningNode = None
+                            self.newPointOnLine(pos, startNode, endNode, nodeSize)
+                            startNode = None
                             endNode = None
-                            tempLst = LinkedList()
+                            self.tempLst = LinkedList()
                             if (displayName == playerOneName):
                                 displayName = playerTwoName
                             else:
@@ -220,7 +203,7 @@ class SproutsController:
                                         print("Illegal move, node is full")
                                     else:
                                         #save pressed node
-                                        beginningNode = sprite
+                                        startNode = sprite
                                         drawing = True
                                         exitedNode = False
                                         placeNewPoint = False
@@ -228,7 +211,7 @@ class SproutsController:
                 #Game Logic
                 self.all_sprites_list.update()
 
-                permLst.drawLst(self.disp.screen, self.disp.BLACK)
+                self.permLst.drawLst(self.disp.screen, self.disp.BLACK)
         
                 #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
                 #if (drawPointsOnce):
@@ -244,7 +227,7 @@ class SproutsController:
 
         pygame.quit()
 
-    def initializeGameState(self, filename,spriteList):
+    def initializeGameState(self, filename):
         self.G = Grid(self.disp.size[0],self.disp.size[1])
         margin = 100
         y = 1
@@ -257,15 +240,23 @@ class SproutsController:
                 n = int(line)
                 for labelCounter in range(1,n+1):
                     currNode = SquareNode(self.disp.RED, nodeSize, nodeSize, (margin*x),(margin*y), 0, labelCounter)
-                    spriteList.add(currNode)
+                    self.all_sprites_list.add(currNode)
                     Grid.remove_node_area(currNode,self.G,0)
                     x+=1
                     if ((margin*x)) >= (self.disp.size[0]):
                         x = 1
                         y += 1
                 firstRead = True
-                print("Done med placering")
+            else:
                 #init edges between nodes as specificed, and check legality
+                labels = line.split()
+                startNode = self.all_sprites_list.sprites()[int(labels[0])-1]
+                endNode = self.all_sprites_list.sprites()[int(labels[1])-1]
+                Grid.find_path(startNode,endNode,self.permLst,self.G,self.all_sprites_list) #Find path from prev. node to current node.
+                Grid.block_nodes(self.permLst,self.G)      
+                self.permLst.drawLst(self.disp.screen, self.disp.PURPLE)    
+        print("Done med placering")
+                
 
     def game_intro(self):
         intro = True
@@ -313,11 +304,11 @@ class SproutsController:
         textRect.center = ((pos_x+(width/2)), (pos_y+(height/2)))
         self.disp.screen.blit(textSurf, textRect)
 
-    def newPointOnLine(self, pos, tempLst, beginningNode, endNode, nodeSize):
+    def newPointOnLine(self, pos, startNode, endNode, nodeSize):
         global labelCounter
         global placeNewPoint
         print("Nu skal der sgu laves punkter fyr")
-        position_of_new_sprite = closest_point(pos, tempLst, beginningNode, endNode, nodeSize)
+        position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize)
         self.all_sprites_list.add(SquareNode(self.disp.RED, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter))
         labelCounter += 1
         placeNewPoint = False
