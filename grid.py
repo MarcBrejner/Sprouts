@@ -107,7 +107,7 @@ class Grid():
                 point = p
         return point
     
-    def generate_node_on_path(startNode,endNode,lst,G):
+    #def generate_node_on_path(startNode,endNode,lst,G):
 
 
         
@@ -120,5 +120,3 @@ class Grid():
         #print(list(G.nodes))
 
         #print(nx.dijkstra_path(G,(1,1),(5,5)))
-
-    
