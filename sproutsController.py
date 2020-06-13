@@ -81,7 +81,9 @@ class SproutsController:
                             if sprite.rect.collidepoint(pos):
                                 if (sprite.isFull()):
                                     print("Illegal move, node is full")
-                                elif pathfinding and not (sprite == startNode):
+                                elif (placeNewPoint):    
+                                    print("Place a new point, by left clicking")
+                                elif pathfinding and not (sprite == tempNode):
                                     print("TO")
 
                                     endNode = sprite
@@ -90,10 +92,19 @@ class SproutsController:
                                     
                                     Grid.find_path(startNode , endNode , self.tempLst , self.G , self.all_sprites_list) #Find path from prev. node to current node.
 
+                                    #Grid.pruned_grid(sprite,tempNode,self.G,5,all_sprites_list)
+                                    try:
+                                        Grid.find_path(last_pos,pathfindingPos,tempLst,H) #Find path from prev. node to current node.
+                                        placeNewPoint = True
+                                    except Exception as e:
+                                        print(str(e))
+
                                     self.tempLst.drawLst(self.disp.screen, self.disp.PURPLE)
 
+                                    beginningNode.incrementCounter()
+                                    sprite.incrementCounter()
+
                                     pathfinding = False
-                                    startNode = None
                                     H = None
 
                                     #remove underlying grid around new edge
@@ -172,12 +183,12 @@ class SproutsController:
                         #When mouse is pressed, checks if mouse is over a node, if so start drawing.
                         pos = pygame.mouse.get_pos()
                         if (placeNewPoint):
-                            print("Nu skal der sgu laves punkter fyr")
-                            position_of_new_sprite = closest_point(pos, self.tempLst, beginningNode, endNode, nodeSize)
-                            self.all_sprites_list.add(SquareNode(self.disp.RED, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter))
-                            labelCounter += 1
-                            placeNewPoint = False
+                            self.newPointOnLine(pos, tempLst, beginningNode, endNode, nodeSize)
+                            startNode = None
+                            endNode = None
                             self.tempLst = LinkedList()
+                        elif(pathfinding):
+                            print("Finish path finding by right clicking on a node")
                         else:
                             for sprite in self.all_sprites_list:
                                 if sprite.rect.collidepoint(pos):
@@ -282,3 +293,13 @@ class SproutsController:
         textSurf, textRect = SproutsController.text_objects(msg, smallText)
         textRect.center = ((pos_x+(width/2)), (pos_y+(height/2)))
         self.disp.screen.blit(textSurf, textRect)
+
+    def newPointOnLine(self, pos, tempLst, beginningNode, endNode, nodeSize):
+        global labelCounter
+        global placeNewPoint
+        print("Nu skal der sgu laves punkter fyr")
+        position_of_new_sprite = closest_point(pos, tempLst, beginningNode, endNode, nodeSize)
+        self.all_sprites_list.add(SquareNode(self.disp.RED, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter))
+        labelCounter += 1
+        placeNewPoint = False
+        

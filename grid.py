@@ -54,7 +54,7 @@ class Grid():
         try:
             path = nx.dijkstra_path(H,startPos,endPos)
         except:
-            print("Path not available")
+            raise Exception("No path available")
             return
         last_point = startPos
         for point in path:
