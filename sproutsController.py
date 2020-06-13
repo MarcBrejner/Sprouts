@@ -79,7 +79,7 @@ class SproutsController:
                             if sprite.rect.collidepoint(pos):
                                 if (sprite.isFull()):
                                     print("Illegal move, node is full")
-                                elif pathfinding:
+                                elif pathfinding and not (sprite == tempNode):
                                     print("TO")
                                     print(pos)
 
