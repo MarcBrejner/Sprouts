@@ -37,16 +37,32 @@ class Grid():
             Gr.G.remove_nodes_from(Grid.points_in_circle_np(radius,x,y))
             head = head.next
 
-    def find_path(start,end,lst,G):
+    def find_path(startNode, endNode , lst , G , spriteList):
+
+        #first click
+        s = Grid.set_of_circumfering_points(startNode,G)
+        startPos = Grid.closest_in_set((endNode.rect.centerx,endNode.rect.centery),s)
+
+        #second click
+        s = Grid.set_of_circumfering_points(endNode,G)
+        endPos = Grid.closest_in_set(startPos,s)
+
+        #copy grid
+        H = Grid.pruned_grid(startNode , endNode , G , 5 , spriteList)
+
+        #try to find shortest path
         try:
-            path = nx.dijkstra_path(G,start,end)
+            path = nx.dijkstra_path(H,startPos,endPos)
         except:
             print("Path not available")
             return
-        last_point = start
+        last_point = startPos
         for point in path:
             lst.prepend((last_point,point))
             last_point = point
+        #increment node degree if succesful
+        startNode.incrementCounter()
+        endNode.incrementCounter()
 
     def remove_node_area(node,Gr,margin):
         Gr.G.remove_nodes_from(Grid.points_in_circle_np(node.radius+margin,node.rect.centerx,node.rect.centery))
@@ -69,7 +85,7 @@ class Grid():
         return H
 
     def set_of_circumfering_points(node,Gr):
-        margin = 2
+        margin = 1
         #set of points on node
         Q = Grid.points_in_circle_np(node.radius,node.rect.centerx,node.rect.centery)
 
@@ -90,7 +106,9 @@ class Grid():
                 shortestDist = dist
                 point = p
         return point
-            
+    
+    def generate_node_on_path(startNode,endNode,lst,G):
+
 
         
         #Q = Grid.points_in_circle_np(5,6,6)
