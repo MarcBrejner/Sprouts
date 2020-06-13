@@ -43,13 +43,13 @@ class LinkedList:
     # Draw the first element of the list
     def drawHead(self, image, color):
         curr = self.head
-        pygame.draw.line(image, color, curr.data[0], curr.data[1], 1)
+        pygame.draw.line(image, color, curr.data[0], curr.data[1], 2)
     
     # Draw the entire list
     def drawLst(self, image, color):
         curr = self.head
         while curr:
-            pygame.draw.line(image, color, curr.data[0] , curr.data[1], 1)
+            pygame.draw.line(image, color, curr.data[0] , curr.data[1], 2)
             curr = curr.next
 
     # Concat two linked lists

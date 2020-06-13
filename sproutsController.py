@@ -32,7 +32,7 @@ class SproutsController:
         global labelCounter
 
         #FIELDS
-        G = Grid(self.disp.size[0],self.disp.size[1])
+        
 
         LEFT = 1
         RIGHT = 3
@@ -71,30 +71,49 @@ class SproutsController:
                                 elif pathfinding:
                                     print("TO")
                                     print(pos)
+
+                                    H = Grid.pruned_grid(tempNode,sprite,self.G,5,self.all_sprites_list)
+                                    s = Grid.set_of_circumfering_points(sprite,self.G)
+
+                                    pathfindingPos = Grid.closest_in_set(pos,s)
+                                    print(pathfindingPos)
                                     print("FINDING PATH...")
                                     
-                                    
-                                    Grid.find_path(last_pos,pos,tempLst,G) #Find path from prev. node to current node.
+                                    #clean up
+                                    #Grid.remove_node_area(sprite,self.G)
+                                    #Grid.remove_node_area(tempNode,self.G)
+
+                                    #Grid.pruned_grid(sprite,tempNode,self.G,5,all_sprites_list)
+                                    Grid.find_path(last_pos,pathfindingPos,tempLst,H) #Find path from prev. node to current node.
                                     tempLst.drawLst(self.disp.screen, self.disp.PURPLE)
+
 
                                     pathfinding = False
                                     tempNode = None
+                                    H = None
 
                                     #remove underlying grid around new edge
-                                    Grid.block_nodes(tempLst,G)
+                                    Grid.block_nodes(tempLst,self.G)
 
                                     #Accept new edge, TODO: add condition for accepting
                                     permLst.merge(tempLst)
                                     merged = True
                                 else:
                                     #save pressed node
-
+                                    tempNode = sprite
+                                    
                                     #debug
                                     print("FROM")
-                                    last_pos = pos
+                                    print(pos)
+
+                                    
+                                    s = Grid.set_of_circumfering_points(sprite,self.G)
+                                    last_pos = Grid.closest_in_set(pos,s)
+
+
                                     print(last_pos)
 
-                                    tempNode = sprite
+                                    
                                     pathfinding = True #start pathfinding on next click
                                     
                          
@@ -130,7 +149,7 @@ class SproutsController:
                                     #TO:DO add check for whether or not counters are full
                                 
                                     #Add edge to perm list of edges.
-                                    Grid.block_nodes(tempLst,G)
+                                    Grid.block_nodes(tempLst,self.G)
 
                                     permLst.merge(tempLst)
                                     merged = True
@@ -147,14 +166,15 @@ class SproutsController:
                         if (not merged):
                             # TODO: This can erase existing lines, maybe we should fix
                             tempLst.drawLst(self.disp.screen, self.disp.GREEN)
+                            tempLst = LinkedList()
                         #Reset mouse position, tempList and drawing status on release.
                         mouse_position = (0, 0)
                         last_pos = None
                         drawing = False
                         merged = False
                         exitedNode = False
-                        print(tempLst)
-                        tempLst = LinkedList()
+                        #print(tempLst)
+
                     elif event.type == MOUSEBUTTONDOWN and event.button == LEFT:
                         #When mouse is pressed, checks if mouse is over a node, if so start drawing.
                         pos = pygame.mouse.get_pos()
@@ -198,6 +218,7 @@ class SproutsController:
         pygame.quit()
 
     def initializeGameState(self, filename,spriteList):
+        self.G = Grid(self.disp.size[0],self.disp.size[1])
         margin = 100
         y = 1
         x = 1
@@ -208,7 +229,9 @@ class SproutsController:
             if not(firstRead):
                 n = int(line)
                 for labelCounter in range(1,n+1):
-                    spriteList.add(SquareNode(self.disp.RED, nodeSize, nodeSize, (margin*x),(margin*y), 0, labelCounter))
+                    currNode = SquareNode(self.disp.RED, nodeSize, nodeSize, (margin*x),(margin*y), 0, labelCounter)
+                    spriteList.add(currNode)
+                    Grid.remove_node_area(currNode,self.G,0)
                     x+=1
                     if ((margin*x)) >= (self.disp.size[0]):
                         x = 1
