@@ -2,7 +2,6 @@ import pygame, random
 from sproutsDisplay import SproutsDisplay
 from sproutsController import SproutsController
 from pygame.locals import *
-import pygame_menu
 pygame.init()
 
 def main():

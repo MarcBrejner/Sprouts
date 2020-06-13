@@ -191,7 +191,7 @@ class SproutsController:
                         if (placeNewPoint):
                             print("Nu skal der sgu laves punkter fyr")
                             position_of_new_sprite = closest_point(pos, tempLst, beginningNode, endNode, nodeSize)
-                            self.all_sprites_list.add(SquareNode(self.disp.RED, nodeSize, nodeSize, position_of_new_sprite[0]-nodeSize/2, position_of_new_sprite[1]-nodeSize/2, 2, labelCounter))
+                            self.all_sprites_list.add(SquareNode(self.disp.RED, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter))
                             labelCounter += 1
                             placeNewPoint = False
                             tempLst = LinkedList()
