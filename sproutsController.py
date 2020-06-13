@@ -81,7 +81,7 @@ class SproutsController:
                                     print("Illegal move, node is full")
                                 elif (placeNewPoint):    
                                     print("Place a new point, by left clicking")
-                                elif pathfinding:
+                                elif pathfinding and not (sprite == tempNode):
                                     print("TO")
                                     print(pos)
 
