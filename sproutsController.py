@@ -10,7 +10,6 @@ import numpy as np
 from grid import Grid
 from itertools import product
 
-
 #Nodes
  
 # Add the node to the list of objects
@@ -58,7 +57,11 @@ class SproutsController:
         global playerOneName
         global playerTwoName
 
-        self.disp.screen.fill(self.disp.GREEN)
+        self.disp.screen.fill(self.disp.WHITE)
+        #self.disp.screen.fill(self.disp.WHITE)
+        #background = pygame.image.load("small_plant.png")
+        #background = pygame.transform.scale(background, (400, 400))
+        #self.disp.screen.blit(background, (400-328,500-256+10))
 
         #FIELDS
         G = Grid(self.disp.size[0],self.disp.size[1])
@@ -141,7 +144,7 @@ class SproutsController:
                             if last_pos is not None and not isInsideNode:
                                     # Draws a line between the current mouse position and the mouse position from the last frame
                                     self.tempLst.prepend((last_pos, pos))
-                                    self.tempLst.drawHead(self.disp.screen, self.disp.BLACK)
+                                    self.tempLst.drawHead(self.disp.screen, self.disp.LIME_GREEN)
                             last_pos = pos
                     elif event.type == MOUSEBUTTONUP and event.button == LEFT:
                         #When mouse is released, checks if mouse is over a node
@@ -174,7 +177,7 @@ class SproutsController:
                         # Delete drawn line if it didn't end in a sprite
                         if (not merged):
                             # TODO: This can erase existing lines, maybe we should fix
-                            self.tempLst.drawLst(self.disp.screen, self.disp.GREEN)
+                            self.tempLst.drawLst(self.disp.screen, self.disp.WHITE)
                             self.tempLst = LinkedList()
                         #Reset mouse position, tempList and drawing status on release.
                         mouse_position = (0, 0)
@@ -211,7 +214,7 @@ class SproutsController:
                 #Game Logic
                 self.all_sprites_list.update()
 
-                self.permLst.drawLst(self.disp.screen, self.disp.BLACK)
+                self.permLst.drawLst(self.disp.screen, self.disp.LIME_GREEN)
         
                 #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
                 #if (drawPointsOnce):
@@ -239,7 +242,7 @@ class SproutsController:
             if not(firstRead):
                 n = int(line)
                 for labelCounter in range(1,n+1):
-                    currNode = SquareNode(self.disp.RED, nodeSize, nodeSize, (margin*x),(margin*y), 0, labelCounter)
+                    currNode = SquareNode(self.disp.BROWN, nodeSize, nodeSize, (margin*x),(margin*y), 0, labelCounter)
                     self.all_sprites_list.add(currNode)
                     Grid.remove_node_area(currNode,self.G,0)
                     x+=1
@@ -275,14 +278,17 @@ class SproutsController:
             
             #Ready the menu screen
             self.disp.screen.fill(self.disp.WHITE)
-            largeText = pygame.font.Font("freesansbold.ttf", 100)
+            background = pygame.image.load("small_plant.png")
+            #background = pygame.transform.scale(background, (400, 400))
+            self.disp.screen.blit(background, (400-328,500-256+10))
+            largeText = pygame.font.Font("Pacifico.ttf", 50)
             TextSurf, TextRect = SproutsController.text_objects("Sprouts", largeText)
-            TextRect.center = ((self.disp.size[0]/2, self.disp.size[1]/4))
+            TextRect.center = ((self.disp.size[0]/2, self.disp.size[1]/8))
             self.disp.screen.blit(TextSurf, TextRect)
 
-            self.button("START", self.disp.size[0]/2-50, self.disp.size[1]/2-50, 100, 50, self.disp.GREEN, self.disp.LIGHT_GREEN, self.GameLoop)
-            self.button("Input names", self.disp.size[0]/2-50, self.disp.size[1]/2+100-50, 100, 50, self.disp.BLUE, self.disp.LIGHT_BLUE)
-            self.button("QUIT", self.disp.size[0]/2-50, self.disp.size[1]/2+200-50, 100, 50, self.disp.RED, self.disp.LIGHT_RED, self.QuitGame)
+            self.button("START", 200/3, self.disp.size[1]/4+25, 100, 50, self.disp.GREEN, self.disp.LIGHT_GREEN, self.GameLoop)
+            #self.button("NAMES", self.disp.size[0]/2-50, self.disp.size[1]/2+75-50, 100, 50, self.disp.BLUE, self.disp.LIGHT_BLUE)
+            self.button("QUIT", self.disp.size[0]-200/3-100, self.disp.size[1]/4+25, 100, 50, self.disp.RED, self.disp.LIGHT_RED, self.QuitGame)
             pygame.display.update()
 
     def QuitGame(self):
@@ -299,12 +305,12 @@ class SproutsController:
 
         #Hightlight button, when mouse hover
         if pos_x+width > mouse[0] > pos_x and pos_y+height > mouse[1] > pos_y:
-            pygame.draw.rect(self.disp.screen, i_color, (pos_x, pos_y, width, height))
+            pygame.draw.rect(self.disp.screen, i_color, (pos_x, pos_y, width, height), 3)
 
             if click[0] == 1 and action != None:
                 action()
         else: 
-            pygame.draw.rect(self.disp.screen, a_color, (pos_x, pos_y, width, height))
+            pygame.draw.rect(self.disp.screen, a_color, (pos_x, pos_y, width, height), 3)
 
         smallText = pygame.font.Font("freesansbold.ttf", 20)
         textSurf, textRect = SproutsController.text_objects(msg, smallText)
@@ -316,12 +322,12 @@ class SproutsController:
         global placeNewPoint
         print("Nu skal der sgu laves punkter fyr")
         position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize)
-        self.all_sprites_list.add(SquareNode(self.disp.RED, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter))
+        self.all_sprites_list.add(SquareNode(self.disp.BROWN, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter))
         labelCounter += 1
         placeNewPoint = False
         
     def turnTracker(self, displayName):
-        largeText = pygame.font.Font("freesans.ttf", 20)
+        largeText = pygame.font.Font("Pacifico.ttf", 30)
         TextSurf, TextRect = SproutsController.text_objects(displayName, largeText)
         TextRect.center = ((self.disp.size[0]/2, 20))
         pygame.draw.rect(self.disp.screen, self.disp.GREEN, TextRect)
