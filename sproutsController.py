@@ -252,8 +252,15 @@ class SproutsController:
                 labels = line.split()
                 startNode = self.all_sprites_list.sprites()[int(labels[0])-1]
                 endNode = self.all_sprites_list.sprites()[int(labels[1])-1]
-                Grid.find_path(startNode,endNode,self.permLst,self.G,self.all_sprites_list) #Find path from prev. node to current node.
-                Grid.block_nodes(self.permLst,self.G)      
+
+                Grid.find_path(startNode,endNode,self.tempLst,self.G,self.all_sprites_list) #Find path from prev. node to current node.
+                newNode = self.generate_node_on_path(startNode,endNode,self.tempLst,self.G)
+
+                self.all_sprites_list.add(newNode)
+                Grid.remove_node_area(newNode,self.G,0)
+                Grid.block_nodes(self.tempLst,self.G)
+
+                self.permLst.merge(self.tempLst)
                 self.permLst.drawLst(self.disp.screen, self.disp.PURPLE)    
         print("Done med placering")
                 
@@ -319,3 +326,43 @@ class SproutsController:
         TextRect.center = ((self.disp.size[0]/2, 20))
         pygame.draw.rect(self.disp.screen, self.disp.GREEN, TextRect)
         self.disp.screen.blit(TextSurf, TextRect)
+
+    def generate_node_on_path(self,startNode,endNode,lst,G):
+        radius = 30
+        center_startNode = np.subtract(startNode.getCoordinates(), (nodeSize/2, nodeSize/2))
+        center_endNode = np.subtract(endNode.getCoordinates(), (nodeSize/2, nodeSize/2))
+
+        Node_bool = False
+
+        shortestDist = 999999999
+        curr_segment = lst.head
+        closestNode = curr_segment.data[0]
+        while curr_segment:
+            dx_end = abs(curr_segment.data[0][0] - endNode.rect.x-10)
+            dy_end = abs(curr_segment.data[0][1] - endNode.rect.y-10)
+            dx_start = abs(curr_segment.data[0][0] - startNode.rect.x-10)
+            dy_start = abs(curr_segment.data[0][1] - startNode.rect.y-10)
+
+            if (distance(curr_segment.data[0], center_startNode) >= distance(curr_segment.data[0], center_endNode)):
+                if (dx_end>radius or dy_end>radius):
+                    Node_bool = True
+                else:
+                    Node_bool = False
+            elif(distance(curr_segment.data[0], center_startNode) < distance(curr_segment.data[0], center_endNode)):
+                if (dx_start>radius or dy_start>radius):
+                    Node_bool = True
+                else:
+                    Node_bool = False
+
+
+            #distance_from_click = distance(curr_segment.data[0], mouse_pos)
+            if(Node_bool):
+                #shortestDist = distance_from_click
+                closestNode = curr_segment.data[0]
+                break
+            curr_segment = curr_segment.next
+        if(closestNode == lst.head.data[0]):
+            print("Der kunne ikke findes et punkt")
+        
+        return SquareNode(self.disp.RED, nodeSize, nodeSize, closestNode[0], closestNode[1], 2, labelCounter)
+

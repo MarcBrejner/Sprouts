@@ -106,17 +106,3 @@ class Grid():
                 shortestDist = dist
                 point = p
         return point
-    
-    #def generate_node_on_path(startNode,endNode,lst,G):
-
-
-        
-        #Q = Grid.points_in_circle_np(5,6,6)
-        #print("nodes in Q")
-        #print(list(Q))
-
-        #G.remove_nodes_from(Q)
-        #print("nodes after")
-        #print(list(G.nodes))
-
-        #print(nx.dijkstra_path(G,(1,1),(5,5)))
