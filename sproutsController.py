@@ -338,7 +338,7 @@ class SproutsController:
         global labelCounter
         global placeNewPoint
         print("Nu skal der sgu laves punkter fyr")
-        position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize)
+        position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize, self.permLst, self.all_sprites_list, self.disp)
         #self.all_sprites_list.add()
         newNode = SquareNode(self.disp.BROWN, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter)
         labelCounter += 1
@@ -418,7 +418,7 @@ class SproutsController:
             window.destroy()
             self.winnerIs()
 
-        label = Label(window, text="Is there no more possible moves? If not, choose a winner\n")
+        label = Label(window, text="Is there no more possible moves? If not, choose a winner\n", background="#ffffff")
         button1 = Button(window, text="End Game", background="#ffffff", command=end_game)
         button2 = Button(window, text="Continue Game", background="#ffffff", command=continue_game)
         label.pack(in_=top)
