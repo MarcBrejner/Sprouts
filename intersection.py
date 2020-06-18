@@ -2,6 +2,7 @@ from scipy.spatial import distance #pip3 install scipy
 import numpy as np
 import math
 from grid import Grid
+import pygame
 
 def subtract(p1, p2):
     x1,y1 = p1
@@ -98,7 +99,7 @@ def distance(point1, point2):
     return float(math.sqrt((x2-x1)**2+(y2-y1)**2))
     
 # Only have to use one of the points in each segment, since the segments overlap in their starting and ending points
-def closest_point(mouse_pos, lst, startNode, endNode, nodeSize):
+def closest_point(mouse_pos, lst, startNode, endNode, nodeSize, permLst, spritesLst, display):
     radius = 30
     center_startNode = np.subtract(startNode.getCoordinates(), (nodeSize/2, nodeSize/2))
     center_endNode = np.subtract(endNode.getCoordinates(), (nodeSize/2, nodeSize/2))
@@ -127,9 +128,21 @@ def closest_point(mouse_pos, lst, startNode, endNode, nodeSize):
 
         distance_from_click = distance(curr_segment.data[0], mouse_pos)
         if(distance_from_click <= shortestDist and Node_bool):
-            shortestDist = distance_from_click
-            closestNode = curr_segment.data[0]
+            if (intersectionWithOtherPoints(curr_segment.data[0], spritesLst, display)):
+                shortestDist = distance_from_click
+                closestNode = curr_segment.data[0]
         curr_segment = curr_segment.next
     if(closestNode == lst.head.data[0]):
         print("Der kunne ikke findes et punkt")
     return closestNode
+
+def intersectionWithOtherPoints(pointOnLine, spritesLst, display):
+    newPoint = pygame.draw.circle(display.screen, display.WHITE, (pointOnLine[0], pointOnLine[1]), 10)
+    for sprite in spritesLst:
+        if (sprite.rect.colliderect(newPoint)):
+            print("For tæt på et punkt")
+            return False
+            break
+        else:
+            continue
+    return True

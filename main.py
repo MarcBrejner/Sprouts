@@ -7,8 +7,8 @@ pygame.init()
 def main():
     gameIcon = pygame.image.load('plant.png')
     pygame.display.set_icon(gameIcon)
-    disp = SproutsDisplay(400,500,pygame)
-    controller = SproutsController(pygame,disp)
+    disp = SproutsDisplay(400,500, pygame)
+    controller = SproutsController(pygame, disp)
     controller.initializeGameState("initialize.txt")
     controller.game_intro()
 

@@ -5,17 +5,20 @@ from squareNode import SquareNode
 from linkedList import LinkedList
 from point import Point
 from intersection import *
+from tkinter import *
 import networkx as nx
 import numpy as np
 from grid import Grid
 from itertools import product
+
+
 
 #Nodes
  
 # Add the node to the list of objects
 
 labelCounter = 0
-nodeSize = 20
+nodeSize = 15
 LEFT = 1
 RIGHT = 3
 mouse_position = (0, 0)
@@ -58,6 +61,7 @@ class SproutsController:
         global playerTwoName
 
         self.disp.screen.fill(self.disp.WHITE)
+
         #self.disp.screen.fill(self.disp.WHITE)
         #background = pygame.image.load("small_plant.png")
         #background = pygame.transform.scale(background, (400, 400))
@@ -74,6 +78,7 @@ class SproutsController:
 
         #This will be a list that will contain all the sprites we intend to use in our game.
         all_sprites_list = pygame.sprite.Group()
+        startNode = None
 
         carryOn = True
         clock=pygame.time.Clock()
@@ -132,6 +137,10 @@ class SproutsController:
                     elif event.type == MOUSEMOTION and pygame.mouse.get_pressed()[0]:
                         if (drawing):
                             pos = pygame.mouse.get_pos()
+                            convert = list(pos)
+                            if convert[1] < 50:
+                                convert[1] = 50
+                            pos = tuple(convert)
                             for sprite in self.all_sprites_list:
                                 if sprite.rect.collidepoint(pos):
                                     print("Du er stadig inde i node, idiot!")
@@ -215,6 +224,9 @@ class SproutsController:
                 self.all_sprites_list.update()
 
                 self.permLst.drawLst(self.disp.screen, self.disp.LIME_GREEN)
+
+                self.button("Controls", 20, 10, 100, 40, self.disp.GREEN, self.disp.LIGHT_GREEN, self.showControls)
+                self.button("Winner", self.disp.size[0]-120, 10, 100, 40, self.disp.GREEN, self.disp.LIGHT_GREEN, self.chooseWinner)
         
                 #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
                 #if (drawPointsOnce):
@@ -273,7 +285,7 @@ class SproutsController:
             self.disp.screen.fill(self.disp.WHITE)
             background = pygame.image.load("small_plant.png")
             #background = pygame.transform.scale(background, (400, 400))
-            self.disp.screen.blit(background, (400-328,500-256+10))
+            self.disp.screen.blit(background, (self.disp.size[0]-328,self.disp.size[1]-256+10))
             largeText = pygame.font.Font("Pacifico.ttf", 50)
             TextSurf, TextRect = SproutsController.text_objects("Sprouts", largeText)
             TextRect.center = ((self.disp.size[0]/2, self.disp.size[1]/8))
@@ -298,23 +310,24 @@ class SproutsController:
 
         #Hightlight button, when mouse hover
         if pos_x+width > mouse[0] > pos_x and pos_y+height > mouse[1] > pos_y:
-            pygame.draw.rect(self.disp.screen, i_color, (pos_x, pos_y, width, height), 3)
+            pygame.draw.rect(self.disp.screen, a_color, (pos_x, pos_y, width, height), 3)
 
             if click[0] == 1 and action != None:
                 action()
         else: 
-            pygame.draw.rect(self.disp.screen, a_color, (pos_x, pos_y, width, height), 3)
+            pygame.draw.rect(self.disp.screen, i_color, (pos_x, pos_y, width, height), 3)
 
         smallText = pygame.font.Font("freesansbold.ttf", 20)
         textSurf, textRect = SproutsController.text_objects(msg, smallText)
         textRect.center = ((pos_x+(width/2)), (pos_y+(height/2)))
+        pygame.draw.rect(self.disp.screen, self.disp.WHITE, (pos_x+3, pos_y+3, width-6, height-6))
         self.disp.screen.blit(textSurf, textRect)
 
     def newPointOnLine(self, pos, startNode, endNode, nodeSize):
         global labelCounter
         global placeNewPoint
         print("Nu skal der sgu laves punkter fyr")
-        position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize)
+        position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize, self.permLst, self.all_sprites_list, self.disp)
         self.all_sprites_list.add(SquareNode(self.disp.BROWN, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter))
         labelCounter += 1
         placeNewPoint = False
@@ -323,6 +336,43 @@ class SproutsController:
         largeText = pygame.font.Font("Pacifico.ttf", 30)
         TextSurf, TextRect = SproutsController.text_objects(displayName, largeText)
         TextRect.center = ((self.disp.size[0]/2, 20))
-        reset = pygame.draw.rect(self.disp.screen, self.disp.WHITE, (self.disp.size[0]/2-60, 0, 120, 50))
+        pygame.draw.rect(self.disp.screen, self.disp.WHITE, (self.disp.size[0]/2-60, 0, 120, 50))
         self.disp.screen.blit(TextSurf, TextRect)
 
+    def showControls(self):
+        window = Tk()
+        window.attributes("-topmost", True)
+        window.title("Sprouts Controls")
+
+        label = Label(window, text="\u2022 Use the left mousebutton to draw a line in freehand \n\n \u2022 Use the right mouse button to do pathfinding \n\n \u2022 Click with the left mouse button to place a new point", background="#FFFFFF", justify="left")
+        label.pack()
+
+        window.mainloop()
+
+    def chooseWinner(self):
+        window = Tk()
+        window.attributes("-topmost", True)
+        window.title("Choose winner")
+
+        top = Frame(window)
+        bottom = Frame(window)
+        top.pack(side=TOP)
+        bottom.pack(side=BOTTOM, fill=BOTH, expand=True)
+
+        def continue_game():
+            window.destroy()
+
+        def end_game():
+            window.destroy()
+            self.winnerIs()
+
+        label = Label(window, text="Is there no more possible moves? If not, choose a winner\n")
+        button1 = Button(window, text="End Game", background="#ffffff", command=end_game)
+        button2 = Button(window, text="Continue Game", background="#ffffff", command=continue_game)
+        label.pack(in_=top)
+        button1.pack(in_=bottom, side="left")
+        button2.pack(in_=bottom, side="right")
+        window.mainloop()
+
+    def winnerIs(self):
+        pygame.draw.rect(self.disp.screen, self.disp.WHITE, (0,0,400,500))

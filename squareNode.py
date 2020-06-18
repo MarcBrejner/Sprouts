@@ -18,7 +18,7 @@ class SquareNode(pygame.sprite.Sprite):
         self.image = pygame.Surface([width, height])
         self.image.fill(WHITE)
         self.image.set_colorkey(WHITE)
-        self.radius = 10
+        self.radius = 7
  
         # Draw the car (a rectangle!)
         #pygame.draw.rect(self.image, color, [0, 0, width, height])
