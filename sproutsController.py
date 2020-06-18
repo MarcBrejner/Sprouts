@@ -338,7 +338,7 @@ class SproutsController:
         global labelCounter
         global placeNewPoint
         print("Nu skal der sgu laves punkter fyr")
-        position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize)
+        position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize, self.permLst,self.all_sprites_list,self.disp)
         #self.all_sprites_list.add()
         newNode = SquareNode(self.disp.BROWN, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter)
         labelCounter += 1

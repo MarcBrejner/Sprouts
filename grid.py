@@ -41,9 +41,12 @@ class Grid():
 
         while head:
             #We only use the start point of a segment because the circle is big enough
-            x,y = head.data[0]
-            if not (Grid.isPointInAnyCircle(startNode,endNode,placedNode,x,y)):
-                Gr.G.remove_nodes_from(Grid.points_in_circle_np(radius,x,y))
+            xStart,yStart = head.data[0]
+            xEnd,yEnd = head.data[1]
+            if not (Grid.isPointInAnyCircle(startNode,endNode,placedNode,xStart,yStart)):
+                Gr.G.remove_nodes_from(Grid.points_in_circle_np(radius,xStart,yStart))
+            if not (Grid.isPointInAnyCircle(startNode,endNode,placedNode,xEnd,yEnd)):
+                Gr.G.remove_nodes_from(Grid.points_in_circle_np(radius,xEnd,yEnd))
             head = head.next
 
     def find_path(startNode, endNode , lst , G , spriteList):
