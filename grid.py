@@ -28,24 +28,33 @@ class Grid():
                 yield from set(((x, y), (x, -y), (-x, y), (-x, -y),))
     
 
-    def block_nodes(lst,Gr):
+    def block_nodes(lst,Gr,startNode,endNode,placedNode=None,reverseMargin=0):
         head = lst.head
+        radius = 3
+        #if not (placedNode == None):
+        #    s = Grid.points_in_circle_np(placedNode.radius,placedNode.rect.centerx,placedNode.rect.centery)
+        #else: s = set()
+
+        #s = s.union(Grid.points_in_circle_np(startNode.radius,startNode.rect.centerx,startNode.rect.centery))
+        #s = s.union(Grid.points_in_circle_np(endNode.radius,endNode.rect.centerx,endNode.rect.centery))
+
+
         while head:
             #We only use the start point of a segment because the circle is big enough
-            radius = 5
             x,y = head.data[0]
-            Gr.G.remove_nodes_from(Grid.points_in_circle_np(radius,x,y))
+            if not (Grid.isPointInAnyCircle(startNode,endNode,placedNode,x,y)):
+                Gr.G.remove_nodes_from(Grid.points_in_circle_np(radius,x,y))
             head = head.next
 
     def find_path(startNode, endNode , lst , G , spriteList):
 
         #first click
-        s = Grid.set_of_circumfering_points(startNode,G)
-        startPos = Grid.closest_in_set((endNode.rect.centerx,endNode.rect.centery),s)
+        #s = Grid.set_of_circumfering_points(startNode,G)
+        startPos = ((startNode.rect.centerx),(startNode.rect.centery)) #Grid.closest_in_set((endNode.rect.centerx,endNode.rect.centery),s)
 
         #second click
-        s = Grid.set_of_circumfering_points(endNode,G)
-        endPos = Grid.closest_in_set(startPos,s)
+        #s = Grid.set_of_circumfering_points(endNode,G)
+        endPos = ((endNode.rect.centerx),(endNode.rect.centery))
 
         #copy grid
         H = Grid.pruned_grid(startNode , endNode , G , 5 , spriteList)
@@ -106,17 +115,19 @@ class Grid():
                 shortestDist = dist
                 point = p
         return point
-    
-    #def generate_node_on_path(startNode,endNode,lst,G):
 
+    #https://stackoverflow.com/questions/481144/equation-for-testing-if-a-point-is-inside-a-circle
+    def isPointInCircle(center_x, center_y, radius, x, y):
+        dist = abs(x - center_x)**2 + abs(y - center_y)**2
+        return dist < radius **2
 
-        
-        #Q = Grid.points_in_circle_np(5,6,6)
-        #print("nodes in Q")
-        #print(list(Q))
-
-        #G.remove_nodes_from(Q)
-        #print("nodes after")
-        #print(list(G.nodes))
-
-        #print(nx.dijkstra_path(G,(1,1),(5,5)))
+    def isPointInAnyCircle(node1,node2,placedNode,x,y):
+        if Grid.isPointInCircle(node1.rect.centerx,node1.rect.centery,node1.radius,x,y):
+           return True
+        elif Grid.isPointInCircle(node2.rect.centerx,node2.rect.centery,node2.radius,x,y):
+           return True
+        elif not (placedNode == None):
+           if Grid.isPointInCircle(placedNode.rect.centerx,placedNode.rect.centery,placedNode.radius,x,y):
+                return True
+        else: 
+           return False
