@@ -114,7 +114,7 @@ class SproutsController:
                                     H = None
 
                                     #remove underlying grid around new edge
-                                    Grid.block_nodes(self.tempLst,self.G)
+                                    #Grid.block_nodes(self.tempLst,self.G)
 
                                     #Accept new edge, TODO: add condition for accepting
                                     self.permLst.merge(self.tempLst)    
@@ -161,7 +161,7 @@ class SproutsController:
                                     #TO:DO add check for whether or not counters are full
                                 
                                     #Add edge to perm list of edges.
-                                    Grid.block_nodes(self.tempLst,self.G)
+                                    #Grid.block_nodes(self.tempLst,self.G)
 
                                     self.permLst.merge(self.tempLst)
                                     merged = True
@@ -189,7 +189,9 @@ class SproutsController:
                         #When mouse is pressed, checks if mouse is over a node, if so start drawing.
                         pos = pygame.mouse.get_pos()
                         if (placeNewPoint):
-                            self.newPointOnLine(pos, startNode, endNode, nodeSize)
+                            newNode = self.newPointOnLine(pos, startNode, endNode, nodeSize)
+                            self.all_sprites_list.add(newNode)
+                            Grid.block_nodes(self.tempLst,self.G,startNode,endNode,newNode)
                             startNode = None
                             endNode = None
                             self.tempLst = LinkedList()
@@ -244,7 +246,7 @@ class SproutsController:
                 for labelCounter in range(1,n+1):
                     currNode = SquareNode(self.disp.BROWN, nodeSize, nodeSize, (margin*x),(margin*y), 0, labelCounter)
                     self.all_sprites_list.add(currNode)
-                    Grid.remove_node_area(currNode,self.G,0)
+                    #Grid.remove_node_area(currNode,self.G,0)
                     x+=1
                     if ((margin*x)) >= (self.disp.size[0]):
                         x = 1
@@ -260,11 +262,13 @@ class SproutsController:
                 newNode = self.generate_node_on_path(startNode,endNode,self.tempLst,self.G)
 
                 self.all_sprites_list.add(newNode)
-                Grid.remove_node_area(newNode,self.G,0)
-                Grid.block_nodes(self.tempLst,self.G)
+                #Grid.remove_node_area(newNode,self.G,0)
+                Grid.block_nodes(self.tempLst,self.G,startNode,endNode,newNode)
 
                 self.permLst.merge(self.tempLst)
-                self.permLst.drawLst(self.disp.screen, self.disp.PURPLE)    
+                startNode = None
+                endNode = None
+                self.tempLst = LinkedList()
         print("Done med placering")
                 
 
@@ -322,10 +326,12 @@ class SproutsController:
         global placeNewPoint
         print("Nu skal der sgu laves punkter fyr")
         position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize)
-        self.all_sprites_list.add(SquareNode(self.disp.BROWN, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter))
+        #self.all_sprites_list.add()
+        newNode = SquareNode(self.disp.BROWN, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter)
         labelCounter += 1
         placeNewPoint = False
-        
+        return newNode
+
     def turnTracker(self, displayName):
         largeText = pygame.font.Font("Pacifico.ttf", 30)
         TextSurf, TextRect = SproutsController.text_objects(displayName, largeText)
@@ -370,5 +376,5 @@ class SproutsController:
         if(closestNode == lst.head.data[0]):
             print("Der kunne ikke findes et punkt")
         
-        return SquareNode(self.disp.RED, nodeSize, nodeSize, closestNode[0], closestNode[1], 2, labelCounter)
+        return SquareNode(self.disp.BROWN, nodeSize, nodeSize, closestNode[0], closestNode[1], 2, labelCounter)
 
