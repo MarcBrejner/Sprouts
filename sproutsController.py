@@ -11,8 +11,6 @@ import numpy as np
 from grid import Grid
 from itertools import product
 
-
-
 #Nodes
  
 # Add the node to the list of objects
@@ -35,7 +33,7 @@ playerOneName = "Player 1"
 playerTwoName = "Player 2"
 displayName = playerOneName
 
-instMsgClickNode = "Click a node to begin drawing a line"
+instMsgClickNode = "Left click a node to draw, right click to pathfind"
 instMsgPlacePoint = "Left click to place a point"
 instMsgFinishPath = "Right click on a node to finish pathfinding"
 instMsgSaveLine = "Hit [space] to confirm the line or [esc] to deny"
@@ -272,15 +270,13 @@ class SproutsController:
 
                 self.permLst.drawLst(self.disp.screen, self.disp.LIME_GREEN)
 
-                self.disp.gameButton("Controls", 20, 10, 100, 40, self.disp.BLACK, self.disp.GREEN, self.showControls)
-                self.disp.gameButton("Winner", self.disp.size[0]-120, 10, 100, 40, self.disp.BLACK, self.disp.GREEN, self.chooseWinner)
+                self.disp.gameButton("Controls", 20, 0, 100, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.showControls)
+                self.disp.gameButton("Winner", self.disp.size[0]-120, 0, 100, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.chooseWinner)
         
                 #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
-                #if (drawPointsOnce):
                 self.all_sprites_list.draw(self.disp.screen)
-                    #drawPointsOnce = False 
 
-                self.turnTracker(displayName)
+                self.disp.turnTracker(displayName)
 
                 self.disp.turnInstructions(displayInst)
 
@@ -339,38 +335,6 @@ class SproutsController:
                 endNode = None
                 self.tempLst = LinkedList()
         print("Done med placering")
-                
-
-    def game_intro(self):
-        intro = True
-
-        while intro:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.QuitGame()
-            
-            #Ready the menu screen
-            self.disp.screen.fill(self.disp.WHITE)
-            background = pygame.image.load("small_plant.png")
-            #background = pygame.transform.scale(background, (400, 400))
-            self.disp.screen.blit(background, (self.disp.size[0]-328,self.disp.size[1]-256+10))
-            largeText = pygame.font.Font("Pacifico.ttf", 50)
-            TextSurf, TextRect = SproutsController.text_objects("Sprouts", largeText, self.disp.BLACK)
-            TextRect.center = ((self.disp.size[0]/2, self.disp.size[1]/8))
-            self.disp.screen.blit(TextSurf, TextRect)
-
-            self.disp.menuButton("START", 200/3, self.disp.size[1]/4+25, 100, 50, self.disp.GREEN, self.disp.LIGHT_GREEN, self.GameLoop)
-            #self.button("NAMES", self.disp.size[0]/2-50, self.disp.size[1]/2+75-50, 100, 50, self.disp.BLUE, self.disp.LIGHT_BLUE)
-            self.disp.menuButton("QUIT", self.disp.size[0]-200/3-100, self.disp.size[1]/4+25, 100, 50, self.disp.RED, self.disp.LIGHT_RED, self.QuitGame)
-            pygame.display.update()
-
-    def QuitGame(self):
-        pygame.quit()
-        quit()
-
-    def text_objects(text, font, color):
-        textSurface = font.render(text, True, color)
-        return textSurface, textSurface.get_rect()
 
     def newPointOnLine(self, pos, startNode, endNode, nodeSize):
         global labelCounter
@@ -382,13 +346,6 @@ class SproutsController:
         labelCounter += 1
         placeNewPoint = False
         return newNode
-
-    def turnTracker(self, displayName):
-        largeText = pygame.font.Font("Pacifico.ttf", 30)
-        TextSurf, TextRect = SproutsController.text_objects(displayName, largeText, self.disp.BLACK)
-        TextRect.center = ((self.disp.size[0]/2, 20))
-        pygame.draw.rect(self.disp.screen, self.disp.WHITE, (self.disp.size[0]/2-60, 0, 120, 50))
-        self.disp.screen.blit(TextSurf, TextRect)
 
     def generate_node_on_path(self,startNode,endNode,lst,G):
         radius = 30
@@ -417,7 +374,6 @@ class SproutsController:
                 else:
                     Node_bool = False
 
-
             #distance_from_click = distance(curr_segment.data[0], mouse_pos)
             if(Node_bool):
                 #shortestDist = distance_from_click
@@ -434,17 +390,16 @@ class SproutsController:
         window.attributes("-topmost", True)
         window.title("Sprouts Controls")
 
-        label = Label(window, text="\u2022 Use the left mousebutton to draw a line in freehand \n\n \u2022 Use the right mouse button to do pathfinding \n\n \u2022 Click with the left mouse button to place a new point", background="#ffffff", justify="left")
+        label = Label(window, text="\u2022 Use the left mousebutton to draw a line in freehand \n\n \u2022 Use the right mouse button to do pathfinding \n\n \u2022 After pathfinding, click space to accept the line and esc to delete it \n\n \u2022 Click with the left mouse button to place a new point", background="#ffffff", justify="left")
         label.pack()
 
         window.mainloop()
 
     def chooseWinner(self):
-        global displayName
 
         window = Tk()
         window.attributes("-topmost", True)
-        window.title("Choose winner")
+        window.title("Winner")
 
         #Organise the popup window
         top = Frame(window)
@@ -468,14 +423,15 @@ class SproutsController:
                 winnerName = playerOneName
             root = Tk()
             root.title("Winner")
-            label = Label(root, text="The winner of the game is " + winnerName + "! \n\n Congratulations\n\n", bg="white").pack()
+            label = Label(root, text="The big brain winner of the game is " + winnerName + "! \n\n Congratulations\n", bg="white").pack()
             button = Button(root, text="OK", command=close_end_game, bg="white").pack()
             root.configure(bg="white")
             root.mainloop()
+            self.disp.QuitGame()
 
         # Create widgets
-        label = Label(window, text="Is there no more possible moves? If not, choose a winner\n", bg="white")
-        button1 = Button(window, text="End Game", command=end_game, bg="white")
+        label = Label(window, text="Can't draw anymore lines? \n\n Press surrender to end game and declare a winner\n", bg="white")
+        button1 = Button(window, text="Surrender", command=end_game, bg="white")
         button2 = Button(window, text="Continue Game", command=continue_game, bg="white")
 
         # Pack widgets into the frames
@@ -486,3 +442,5 @@ class SproutsController:
         window.configure(bg="white")
         bottom.configure(bg="white")
         window.mainloop()
+
+    
