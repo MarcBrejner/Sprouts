@@ -271,7 +271,7 @@ class SproutsController:
                 self.permLst.drawLst(self.disp.screen, self.disp.LIME_GREEN)
 
                 self.disp.gameButton("Controls", 20, 0, 100, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.showControls)
-                self.disp.gameButton("Winner", self.disp.size[0]-120, 0, 100, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.chooseWinner)
+                self.disp.gameButton("Surrender", self.disp.size[0]-120, 0, 100, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.chooseWinner)
         
                 #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
                 self.all_sprites_list.draw(self.disp.screen)
@@ -390,9 +390,21 @@ class SproutsController:
         window.attributes("-topmost", True)
         window.title("Sprouts Controls")
 
-        label = Label(window, text="\u2022 Use the left mousebutton to draw a line in freehand \n\n \u2022 Use the right mouse button to do pathfinding \n\n \u2022 After pathfinding, click space to accept the line and esc to delete it \n\n \u2022 Click with the left mouse button to place a new point", background="#ffffff", justify="left")
-        label.pack()
+        def close_window():
+            window.destroy()
 
+        #Organise the popup window
+        top = Frame(window)
+        bottom = Frame(window)
+        top.pack(side=TOP)
+        bottom.pack(side=BOTTOM, fill=BOTH, expand=True)
+
+        label = Label(window, text="\u2022 Use the left mousebutton to draw a line in freehand \n\n \u2022 Use the right mouse button to do pathfinding \n\n \u2022 After pathfinding, click space to accept the line and esc to delete it \n\n \u2022 Click with the left mouse button to place a new point", background="#ffffff", justify="left")
+        button = Button(window, text="OK", command=close_window, bg="white")
+        
+        label.pack(in_=top)
+        button.pack(in_=bottom)
+        bottom.configure(bg="white")
         window.mainloop()
 
     def chooseWinner(self):
