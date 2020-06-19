@@ -32,6 +32,7 @@ exitedNode = False      #Ignores clicking inside a node to increase it's degree
 placeNewPoint = False
 playerOneName = "Player 1"
 playerTwoName = "Player 2"
+displayName = playerOneName
 
 class SproutsController:
     def __init__(self,pygame,disp):
@@ -59,6 +60,7 @@ class SproutsController:
         global placeNewPoint
         global playerOneName
         global playerTwoName
+        global displayName
 
         self.disp.screen.fill(self.disp.WHITE)
 
@@ -137,10 +139,18 @@ class SproutsController:
                     elif event.type == MOUSEMOTION and pygame.mouse.get_pressed()[0]:
                         if (drawing):
                             pos = pygame.mouse.get_pos()
+                            # Restrict the mouse from going into the top region of the window
                             convert = list(pos)
                             if convert[1] < 50:
                                 convert[1] = 50
                             pos = tuple(convert)
+
+                            # Restrict the mouse from going into the bottom region of the window
+                            convert = list(pos)
+                            if convert[1] > 450:
+                                convert[1] = 450
+                            pos = tuple(convert)
+
                             for sprite in self.all_sprites_list:
                                 if sprite.rect.collidepoint(pos):
                                     print("Du er stadig inde i node, idiot!")
@@ -240,7 +250,7 @@ class SproutsController:
                 self.disp.updateScreen(pygame)
               
                 #Number of frames per secong e.g. 60
-                clock.tick(120)
+                clock.tick(180)
 
         pygame.quit()
 
@@ -352,6 +362,13 @@ class SproutsController:
         pygame.draw.rect(self.disp.screen, self.disp.WHITE, (self.disp.size[0]/2-60, 0, 120, 50))
         self.disp.screen.blit(TextSurf, TextRect)
 
+    def turnInstructions(self, message):
+        smallText = pygame.font.Font("freesansbold.ttf", 20)
+        TextSurf, TextRect = SproutsController.text_objects(message, smallText)
+        TextRect.center = ((self.disp.size[0]/2, 450))
+        pygame.draw.rect(self.disp.screen, self.disp.WHITE, (self.disp.size[0]/2-60, 450, 120, 50))
+        self.disp.screen.blit(TextSurf, TextRect)
+
     def generate_node_on_path(self,startNode,endNode,lst,G):
         radius = 30
         center_startNode = np.subtract(startNode.getCoordinates(), (nodeSize/2, nodeSize/2))
@@ -396,16 +413,19 @@ class SproutsController:
         window.attributes("-topmost", True)
         window.title("Sprouts Controls")
 
-        label = Label(window, text="\u2022 Use the left mousebutton to draw a line in freehand \n\n \u2022 Use the right mouse button to do pathfinding \n\n \u2022 Click with the left mouse button to place a new point", background="#FFFFFF", justify="left")
+        label = Label(window, text="\u2022 Use the left mousebutton to draw a line in freehand \n\n \u2022 Use the right mouse button to do pathfinding \n\n \u2022 Click with the left mouse button to place a new point", background="#ffffff", justify="left")
         label.pack()
 
         window.mainloop()
 
     def chooseWinner(self):
+        global displayName
+
         window = Tk()
         window.attributes("-topmost", True)
         window.title("Choose winner")
 
+        #Organise the popup window
         top = Frame(window)
         bottom = Frame(window)
         top.pack(side=TOP)
@@ -414,17 +434,34 @@ class SproutsController:
         def continue_game():
             window.destroy()
 
+        # Make new window and widgets for the winner popup
         def end_game():
-            window.destroy()
-            self.winnerIs()
+            def close_end_game():
+                root.destroy()
 
-        label = Label(window, text="Is there no more possible moves? If not, choose a winner\n", background="#ffffff")
-        button1 = Button(window, text="End Game", background="#ffffff", command=end_game)
-        button2 = Button(window, text="Continue Game", background="#ffffff", command=continue_game)
+            window.destroy()
+            winnerName = ""
+            if (displayName == playerOneName): 
+                winnerName = playerTwoName
+            else:
+                winnerName = playerOneName
+            root = Tk()
+            root.title("Winner")
+            label = Label(root, text="The winner of the game is " + winnerName + "! \n\n Congratulations\n\n", bg="white").pack()
+            button = Button(root, text="OK", command=close_end_game, bg="white").pack()
+            root.configure(bg="white")
+            root.mainloop()
+
+        # Create widgets
+        label = Label(window, text="Is there no more possible moves? If not, choose a winner\n", bg="white")
+        button1 = Button(window, text="End Game", command=end_game, bg="white")
+        button2 = Button(window, text="Continue Game", command=continue_game, bg="white")
+
+        # Pack widgets into the frames
         label.pack(in_=top)
         button1.pack(in_=bottom, side="left")
         button2.pack(in_=bottom, side="right")
-        window.mainloop()
 
-    def winnerIs(self):
-        pygame.draw.rect(self.disp.screen, self.disp.WHITE, (0,0,400,500))
+        window.configure(bg="white")
+        bottom.configure(bg="white")
+        window.mainloop()

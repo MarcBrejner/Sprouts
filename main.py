@@ -9,6 +9,7 @@ def main():
     pygame.display.set_icon(gameIcon)
     disp = SproutsDisplay(400,500, pygame)
     controller = SproutsController(pygame, disp)
+    disp.loadingScreen()
     controller.initializeGameState("initialize.txt")
     controller.game_intro()
 
