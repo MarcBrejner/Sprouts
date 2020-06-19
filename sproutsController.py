@@ -23,6 +23,7 @@ LEFT = 1
 RIGHT = 3
 mouse_position = (0, 0)
 pathfinding = False
+pathFound = False
 drawing = False
 merged = False          #This boolean is checked to make sure that the drawn line was accepted
 last_pos = None
@@ -60,6 +61,7 @@ class SproutsController:
         global placeNewPoint
         global playerOneName
         global playerTwoName
+        global pathFound
         global displayName
 
         self.disp.screen.fill(self.disp.WHITE)
@@ -89,7 +91,20 @@ class SproutsController:
             #https://stackoverflow.com/questions/50503609/how-to-draw-a-continuous-line-in-pygame
                 for event in pygame.event.get():
                     if event.type==pygame.QUIT:
-                        carryOn=False
+                        carryOn=False   
+                    elif pathFound:
+                        keys = pygame.key.get_pressed()
+                        if keys[K_SPACE]:
+                            self.permLst.merge(self.tempLst)
+                            pathFound = False
+                            placeNewPoint = True
+                            startNode.incrementCounter()
+                            endNode.incrementCounter()
+                        elif keys[K_ESCAPE]:
+                            self.tempLst.drawLst(self.disp.screen,self.disp.WHITE)
+                            self.tempLst = LinkedList()
+                            pathFound = False
+                            placeNewPoint = False
                     elif event.type == MOUSEBUTTONDOWN and event.button == RIGHT:
                         #When right mb is pressed, checks if mouse is over a node, if so save node for pathfinding.
                         pos = pygame.mouse.get_pos()
@@ -111,20 +126,21 @@ class SproutsController:
                                     #Grid.pruned_grid(sprite,tempNode,self.G,5,all_sprites_list)
                                     try:
                                         Grid.find_path(startNode , endNode , self.tempLst , self.G , self.all_sprites_list) #Find path from prev. node to current node.
-                                        placeNewPoint = True
                                     except Exception as e:
                                         print(str(e))
 
-                                    self.tempLst.drawLst(self.disp.screen, self.disp.PURPLE)
+                                    #self.tempLst.drawLst(self.disp.screen, self.disp.PURPLE)
 
                                     pathfinding = False
+                                    pathFound = True
                                     H = None
+                                    self.tempLst.drawLst(self.disp.screen,self.disp.LIGHT_RED)
 
                                     #remove underlying grid around new edge
                                     #Grid.block_nodes(self.tempLst,self.G)
 
                                     #Accept new edge, TODO: add condition for accepting
-                                    self.permLst.merge(self.tempLst)    
+                                    #self.permLst.merge(self.tempLst)    
                                 else:
                                     #save pressed node
                                     startNode = sprite
@@ -257,12 +273,14 @@ class SproutsController:
     def initializeGameState(self, filename):
         self.G = Grid(self.disp.size[0],self.disp.size[1])
         margin = 100
+        lineCounter = 0
         y = 1
         x = 1
         firstRead = False
         f = open(filename,"r")
         lines = f.readlines()
         for line in lines:
+            lineCounter += 1
             if not(firstRead):
                 n = int(line)
                 for labelCounter in range(1,n+1):
@@ -279,8 +297,16 @@ class SproutsController:
                 labels = line.split()
                 startNode = self.all_sprites_list.sprites()[int(labels[0])-1]
                 endNode = self.all_sprites_list.sprites()[int(labels[1])-1]
+                try:
+                    Grid.find_path(startNode,endNode,self.tempLst,self.G,self.all_sprites_list) #Find path from prev. node to current node.
+                except:
+                    print("Could not find a path between nodes {} and {} at line {} of initalize.txt..".format(labels[0],labels[1],lineCounter))
+                    startNode = None
+                    endNode = None
+                    self.tempLst = LinkedList()
+                    break;
+                    
 
-                Grid.find_path(startNode,endNode,self.tempLst,self.G,self.all_sprites_list) #Find path from prev. node to current node.
                 newNode = self.generate_node_on_path(startNode,endNode,self.tempLst,self.G)
 
                 self.all_sprites_list.add(newNode)

@@ -30,7 +30,7 @@ class Grid():
 
     def block_nodes(lst,Gr,startNode,endNode,placedNode=None,reverseMargin=0):
         head = lst.head
-        radius = 3
+        radius = 5
         #if not (placedNode == None):
         #    s = Grid.points_in_circle_np(placedNode.radius,placedNode.rect.centerx,placedNode.rect.centery)
         #else: s = set()
@@ -73,8 +73,8 @@ class Grid():
             lst.prepend((last_point,point))
             last_point = point
         #increment node degree if succesful
-        startNode.incrementCounter()
-        endNode.incrementCounter()
+        #startNode.incrementCounter()
+        #endNode.incrementCounter()
 
     def remove_node_area(node,Gr,margin):
         Gr.G.remove_nodes_from(Grid.points_in_circle_np(node.radius+margin,node.rect.centerx,node.rect.centery))
