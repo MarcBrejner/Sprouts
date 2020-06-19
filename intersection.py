@@ -137,7 +137,7 @@ def closest_point(mouse_pos, lst, startNode, endNode, nodeSize, permLst, sprites
     return closestNode
 
 def intersectionWithOtherPoints(pointOnLine, spritesLst, display):
-    newPoint = pygame.draw.circle(display.screen, display.WHITE, (pointOnLine[0], pointOnLine[1]), 10)
+    newPoint = pygame.draw.circle(display.screen, display.WHITE, (pointOnLine[0], pointOnLine[1]), 7)
     for sprite in spritesLst:
         if (sprite.rect.colliderect(newPoint)):
             print("For tæt på et punkt")

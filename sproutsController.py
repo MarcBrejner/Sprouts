@@ -35,6 +35,13 @@ playerOneName = "Player 1"
 playerTwoName = "Player 2"
 displayName = playerOneName
 
+instMsgClickNode = "Click a node to begin drawing a line"
+instMsgPlacePoint = "Left click to place a point"
+instMsgFinishPath = "Right click on a node to finish pathfinding"
+instMsgSaveLine = "Hit [space] to confirm the line or [esc] to deny"
+
+displayInst = instMsgClickNode
+
 class SproutsController:
     def __init__(self,pygame,disp):
         self.disp = disp
@@ -63,6 +70,12 @@ class SproutsController:
         global playerTwoName
         global pathFound
         global displayName
+
+        global displayInst
+        global instMsgClickNode
+        global instMsgFinishPath
+        global instMsgPlacePoint
+        global instMsgSaveLine
 
         self.disp.screen.fill(self.disp.WHITE)
 
@@ -100,11 +113,13 @@ class SproutsController:
                             placeNewPoint = True
                             startNode.incrementCounter()
                             endNode.incrementCounter()
+                            displayInst = instMsgPlacePoint
                         elif keys[K_ESCAPE]:
                             self.tempLst.drawLst(self.disp.screen,self.disp.WHITE)
                             self.tempLst = LinkedList()
                             pathFound = False
                             placeNewPoint = False
+                            displayInst = instMsgClickNode
                     elif event.type == MOUSEBUTTONDOWN and event.button == RIGHT:
                         #When right mb is pressed, checks if mouse is over a node, if so save node for pathfinding.
                         pos = pygame.mouse.get_pos()
@@ -135,6 +150,7 @@ class SproutsController:
                                     pathFound = True
                                     H = None
                                     self.tempLst.drawLst(self.disp.screen,self.disp.LIGHT_RED)
+                                    displayInst = instMsgSaveLine
 
                                     #remove underlying grid around new edge
                                     #Grid.block_nodes(self.tempLst,self.G)
@@ -150,6 +166,7 @@ class SproutsController:
                                     print(sprite.getCoordinates())
 
                                     pathfinding = True #start pathfinding on next click
+                                    displayInst = instMsgFinishPath
                                     
                          
                     elif event.type == MOUSEMOTION and pygame.mouse.get_pressed()[0]:
@@ -209,6 +226,7 @@ class SproutsController:
 
                                     print(sprite.getCounter())
                                     placeNewPoint = True
+                                    displayInst = instMsgPlacePoint
                         # Delete drawn line if it didn't end in a sprite
                         if (not merged):
                             # TODO: This can erase existing lines, maybe we should fix
@@ -230,6 +248,7 @@ class SproutsController:
                             startNode = None
                             endNode = None
                             self.tempLst = LinkedList()
+                            displayInst = instMsgClickNode
                             if (displayName == playerOneName):
                                 displayName = playerTwoName
                             else:
@@ -253,8 +272,8 @@ class SproutsController:
 
                 self.permLst.drawLst(self.disp.screen, self.disp.LIME_GREEN)
 
-                self.button("Controls", 20, 10, 100, 40, self.disp.GREEN, self.disp.LIGHT_GREEN, self.showControls)
-                self.button("Winner", self.disp.size[0]-120, 10, 100, 40, self.disp.GREEN, self.disp.LIGHT_GREEN, self.chooseWinner)
+                self.disp.gameButton("Controls", 20, 10, 100, 40, self.disp.BLACK, self.disp.GREEN, self.showControls)
+                self.disp.gameButton("Winner", self.disp.size[0]-120, 10, 100, 40, self.disp.BLACK, self.disp.GREEN, self.chooseWinner)
         
                 #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
                 #if (drawPointsOnce):
@@ -262,6 +281,8 @@ class SproutsController:
                     #drawPointsOnce = False 
 
                 self.turnTracker(displayName)
+
+                self.disp.turnInstructions(displayInst)
 
                 self.disp.updateScreen(pygame)
               
@@ -334,41 +355,22 @@ class SproutsController:
             #background = pygame.transform.scale(background, (400, 400))
             self.disp.screen.blit(background, (self.disp.size[0]-328,self.disp.size[1]-256+10))
             largeText = pygame.font.Font("Pacifico.ttf", 50)
-            TextSurf, TextRect = SproutsController.text_objects("Sprouts", largeText)
+            TextSurf, TextRect = SproutsController.text_objects("Sprouts", largeText, self.disp.BLACK)
             TextRect.center = ((self.disp.size[0]/2, self.disp.size[1]/8))
             self.disp.screen.blit(TextSurf, TextRect)
 
-            self.button("START", 200/3, self.disp.size[1]/4+25, 100, 50, self.disp.GREEN, self.disp.LIGHT_GREEN, self.GameLoop)
+            self.disp.menuButton("START", 200/3, self.disp.size[1]/4+25, 100, 50, self.disp.GREEN, self.disp.LIGHT_GREEN, self.GameLoop)
             #self.button("NAMES", self.disp.size[0]/2-50, self.disp.size[1]/2+75-50, 100, 50, self.disp.BLUE, self.disp.LIGHT_BLUE)
-            self.button("QUIT", self.disp.size[0]-200/3-100, self.disp.size[1]/4+25, 100, 50, self.disp.RED, self.disp.LIGHT_RED, self.QuitGame)
+            self.disp.menuButton("QUIT", self.disp.size[0]-200/3-100, self.disp.size[1]/4+25, 100, 50, self.disp.RED, self.disp.LIGHT_RED, self.QuitGame)
             pygame.display.update()
 
     def QuitGame(self):
         pygame.quit()
         quit()
 
-    def text_objects(text, font):
-        textSurface = font.render(text, True, (0, 0, 0))
+    def text_objects(text, font, color):
+        textSurface = font.render(text, True, color)
         return textSurface, textSurface.get_rect()
-
-    def button(self, msg, pos_x, pos_y, width, height, i_color, a_color, action=None):
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
-
-        #Hightlight button, when mouse hover
-        if pos_x+width > mouse[0] > pos_x and pos_y+height > mouse[1] > pos_y:
-            pygame.draw.rect(self.disp.screen, a_color, (pos_x, pos_y, width, height), 3)
-
-            if click[0] == 1 and action != None:
-                action()
-        else: 
-            pygame.draw.rect(self.disp.screen, i_color, (pos_x, pos_y, width, height), 3)
-
-        smallText = pygame.font.Font("freesansbold.ttf", 20)
-        textSurf, textRect = SproutsController.text_objects(msg, smallText)
-        textRect.center = ((pos_x+(width/2)), (pos_y+(height/2)))
-        pygame.draw.rect(self.disp.screen, self.disp.WHITE, (pos_x+3, pos_y+3, width-6, height-6))
-        self.disp.screen.blit(textSurf, textRect)
 
     def newPointOnLine(self, pos, startNode, endNode, nodeSize):
         global labelCounter
@@ -383,16 +385,9 @@ class SproutsController:
 
     def turnTracker(self, displayName):
         largeText = pygame.font.Font("Pacifico.ttf", 30)
-        TextSurf, TextRect = SproutsController.text_objects(displayName, largeText)
+        TextSurf, TextRect = SproutsController.text_objects(displayName, largeText, self.disp.BLACK)
         TextRect.center = ((self.disp.size[0]/2, 20))
         pygame.draw.rect(self.disp.screen, self.disp.WHITE, (self.disp.size[0]/2-60, 0, 120, 50))
-        self.disp.screen.blit(TextSurf, TextRect)
-
-    def turnInstructions(self, message):
-        smallText = pygame.font.Font("freesansbold.ttf", 20)
-        TextSurf, TextRect = SproutsController.text_objects(message, smallText)
-        TextRect.center = ((self.disp.size[0]/2, 450))
-        pygame.draw.rect(self.disp.screen, self.disp.WHITE, (self.disp.size[0]/2-60, 450, 120, 50))
         self.disp.screen.blit(TextSurf, TextRect)
 
     def generate_node_on_path(self,startNode,endNode,lst,G):
