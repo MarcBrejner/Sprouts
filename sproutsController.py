@@ -37,6 +37,7 @@ instMsgClickNode = "Left click a node to draw, right click to pathfind"
 instMsgPlacePoint = "Left click to place a point"
 instMsgFinishPath = "Right click on a node to finish pathfinding"
 instMsgSaveLine = "Hit [space] to confirm the line or [esc] to deny"
+instMsgNoPathfind = "No path available"
 
 displayInst = instMsgClickNode
 
@@ -139,16 +140,17 @@ class SproutsController:
                                     #Grid.pruned_grid(sprite,tempNode,self.G,5,all_sprites_list)
                                     try:
                                         Grid.find_path(startNode , endNode , self.tempLst , self.G , self.all_sprites_list) #Find path from prev. node to current node.
+                                        displayInst = instMsgSaveLine
+                                        pathFound = True
                                     except Exception as e:
                                         print(str(e))
+                                        displayInst = instMsgNoPathfind
 
                                     #self.tempLst.drawLst(self.disp.screen, self.disp.PURPLE)
 
                                     pathfinding = False
-                                    pathFound = True
                                     H = None
-                                    self.tempLst.drawLst(self.disp.screen,self.disp.LIGHT_RED)
-                                    displayInst = instMsgSaveLine
+                                    self.tempLst.drawLst(self.disp.screen,self.disp.LIGHT_RED)      
 
                                     #remove underlying grid around new edge
                                     #Grid.block_nodes(self.tempLst,self.G)
