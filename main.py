@@ -11,7 +11,7 @@ def main():
     controller = SproutsController(pygame, disp)
     disp.loadingScreen()
     controller.initializeGameState("initialize.txt")
-    controller.game_intro()
+    disp.game_intro(controller)
 
 if __name__ == "__main__":
     main()
