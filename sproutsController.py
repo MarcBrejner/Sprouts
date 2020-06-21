@@ -268,10 +268,12 @@ class SproutsController:
                 #Game Logic
                 self.all_sprites_list.update()
 
+                
+
                 self.permLst.drawLst(self.disp.screen, self.disp.LIME_GREEN)
 
                 self.disp.gameButton("Controls", 20, 0, 100, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.showControls)
-                self.disp.gameButton("Surrender", self.disp.size[0]-120, 0, 100, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.chooseWinner)
+                self.disp.gameButton("Surrender", self.disp.size[0]-140, 0, 120, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.chooseWinner)
         
                 #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
                 self.all_sprites_list.draw(self.disp.screen)
@@ -281,7 +283,7 @@ class SproutsController:
                 self.disp.turnInstructions(displayInst)
 
                 self.disp.updateScreen(pygame)
-              
+
                 #Number of frames per secong e.g. 60
                 clock.tick(180)
 
