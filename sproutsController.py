@@ -48,6 +48,7 @@ class SproutsController:
         self.all_sprites_list = pygame.sprite.Group()
         self.permLst = LinkedList()
         self.tempLst = LinkedList()
+        self.fixList = LinkedList()
 
 
     #Allowing the user to close the window...
@@ -213,7 +214,7 @@ class SproutsController:
                                 
                                     #Add edge to perm list of edges.
                                     #Grid.block_nodes(self.tempLst,self.G)
-
+                                    self.fixList.prepend( (self.tempLst.head.data[1] , (sprite.rect.centerx,sprite.rect.centery)) )
                                     self.permLst.merge(self.tempLst)
                                     merged = True
 
@@ -272,6 +273,7 @@ class SproutsController:
                 
 
                 self.permLst.drawLst(self.disp.screen, self.disp.LIME_GREEN)
+                self.fixList.drawLst(self.disp.screen, self.disp.LIME_GREEN)
 
                 self.disp.gameButton("Controls", 20, 0, 100, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.showControls)
                 self.disp.gameButton("Surrender", self.disp.size[0]-140, 0, 120, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.chooseWinner)
@@ -328,7 +330,8 @@ class SproutsController:
                     
 
                 newNode = self.generate_node_on_path(startNode,endNode,self.tempLst,self.G)
-
+                startNode.incrementCounter()
+                endNode.incrementCounter()
                 self.all_sprites_list.add(newNode)
                 #Grid.remove_node_area(newNode,self.G,0)
                 Grid.block_nodes(self.tempLst,self.G,startNode,endNode,newNode)
