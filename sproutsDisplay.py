@@ -8,7 +8,7 @@ class SproutsDisplay:
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     RED = (180, 0, 0)
-    LIGHT_RED = (255, 0, 0)
+    LIGHT_RED = (255, 100, 100)
     PURPLE = (255, 0, 255)
     BROWN = (128, 64, 0)
 

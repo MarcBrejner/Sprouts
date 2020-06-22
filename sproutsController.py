@@ -33,11 +33,12 @@ playerOneName = "Player 1"
 playerTwoName = "Player 2"
 displayName = playerOneName
 
-instMsgClickNode = "Left click a node to draw, right click to pathfind"
+instMsgClickNode = "Left click a node to draw, right click to suggest"
 instMsgPlacePoint = "Left click to place a point"
-instMsgFinishPath = "Right click on a node to finish pathfinding"
+instMsgFinishPath = "Right click on a node to finish suggested line"
 instMsgSaveLine = "Hit [space] to confirm the line or [esc] to deny"
 instMsgNoPathfind = "No path available"
+instMsgNodeIsFull = "The node is full, click another"
 
 displayInst = instMsgClickNode
 
@@ -127,6 +128,7 @@ class SproutsController:
                             if sprite.rect.collidepoint(pos):
                                 if (sprite.isFull()):
                                     print("Illegal move, node is full")
+                                    displayInst = instMsgNodeIsFull
                                 elif (placeNewPoint):    
                                     print("Place a new point, by left clicking")
                                 elif pathfinding and not (sprite == startNode):
@@ -205,6 +207,7 @@ class SproutsController:
                             if sprite.rect.collidepoint(pos):
                                 if (sprite.isFull() or (sprite == startNode and sprite.getCounter() >= 2)):
                                     print("Illegal move, node is full")
+                                    displayInst = instMsgNodeIsFull
                                 elif (collision(self.tempLst, self.permLst)):
                                     print("Collision with an edge detected")
                                 elif (disconnected(self.tempLst)):
@@ -260,6 +263,7 @@ class SproutsController:
                                 if sprite.rect.collidepoint(pos):
                                     if (sprite.isFull()):
                                         print("Illegal move, node is full")
+                                        displayInst = instMsgNodeIsFull
                                     else:
                                         #save pressed node
                                         startNode = sprite
@@ -440,7 +444,7 @@ class SproutsController:
                 winnerName = playerOneName
             root = Tk()
             root.title("Winner")
-            label = Label(root, text="The big brain winner of the game is " + winnerName + "! \n\n Congratulations\n", bg="white").pack()
+            label = Label(root, text="The winner of the game is " + winnerName + "! \n\n Congratulations\n", bg="white").pack()
             button = Button(root, text="OK", command=close_end_game, bg="white").pack()
             root.configure(bg="white")
             root.mainloop()
