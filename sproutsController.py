@@ -186,7 +186,6 @@ class SproutsController:
 
                             for sprite in self.all_sprites_list:
                                 if sprite.rect.collidepoint(pos):
-                                    print("Du er stadig inde i node, idiot!")
                                     isInsideNode = True
                                     break
                                 else:
@@ -206,9 +205,9 @@ class SproutsController:
                                 if (sprite.isFull() or (sprite == startNode and sprite.getCounter() >= 2)):
                                     print("Illegal move, node is full")
                                 elif (collision(self.tempLst, self.permLst)):
-                                    print("Der er fandme fucking kollision")
+                                    print("Collision with an edge detected")
                                 elif (disconnected(self.tempLst)):
-                                    print("Du må ikke tegne over andre punkter... Peanut brain")
+                                    print("Collision with a node detected")
                                 elif exitedNode:
                                     #TO:DO add check for whether or not counters are full
                                 
@@ -343,7 +342,6 @@ class SproutsController:
     def newPointOnLine(self, pos, startNode, endNode, nodeSize):
         global labelCounter
         global placeNewPoint
-        print("Nu skal der sgu laves punkter fyr")
         position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize, self.permLst, self.all_sprites_list, self.disp)
         #self.all_sprites_list.add()
         newNode = SquareNode(self.disp.BROWN, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter)
@@ -385,7 +383,7 @@ class SproutsController:
                 break
             curr_segment = curr_segment.next
         if(closestNode == lst.head.data[0]):
-            print("Der kunne ikke findes et punkt")
+            print("No point found")
         
         return SquareNode(self.disp.BROWN, nodeSize, nodeSize, closestNode[0], closestNode[1], 2, labelCounter)
 
