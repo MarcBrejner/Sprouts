@@ -323,6 +323,18 @@ class SproutsController:
                 labels = line.split()
                 startNode = self.all_sprites_list.sprites()[int(labels[0])-1]
                 endNode = self.all_sprites_list.sprites()[int(labels[1])-1]
+                if startNode.isFull() or endNode.isFull():
+                    print("Line {} would cause a node to exceed degree 3".format(lineCounter))
+                    startNode = None
+                    endNode = None
+                    self.tempLst = LinkedList()
+                    break;
+                elif (labels[0] == labels[1]):
+                    print("Loop detected at line {}, ending initialization".format(lineCounter))
+                    startNode = None
+                    endNode = None
+                    self.tempLst = LinkedList()
+                    break;
                 try:
                     Grid.find_path(startNode,endNode,self.tempLst,self.G,self.all_sprites_list) #Find path from prev. node to current node.
                 except:

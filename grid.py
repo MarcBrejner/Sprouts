@@ -119,7 +119,6 @@ class Grid():
                 point = p
         return point
 
-    #https://stackoverflow.com/questions/481144/equation-for-testing-if-a-point-is-inside-a-circle
     def isPointInCircle(center_x, center_y, radius, x, y):
         dist = abs(x - center_x)**2 + abs(y - center_y)**2
         return dist < radius **2
