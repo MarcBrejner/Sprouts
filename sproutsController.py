@@ -14,24 +14,24 @@ from itertools import product
  
 # Add the node to the list of objects
 
-labelCounter = 0
-nodeSize = 15
-LEFT = 1
-RIGHT = 3
-mouse_position = (0, 0)
-pathfinding = False
-pathFound = False
-drawing = False
-merged = False          #This boolean is checked to make sure that the drawn line was accepted
-last_pos = None
-drawPointsOnce = True
+labelCounter = 0        #The label of the newest node
+nodeSize = 15           #Static size used to display nodes
+LEFT = 1                #Number used by pygame to represent left mouse button
+RIGHT = 3               #Number used by pygame to represent right mouse button
+mouse_position = (0, 0) #The current position of the mouse
+pathfinding = False     #Boolean representing whether the system is trying to find a path
+pathFound = False       #Boolean representing whether the system has found a path
+drawing = False         #Boolean representing whether the user is currently drawing
+merged = False          #Boolean representing whether the tempLst has been merged with the permLst
+last_pos = None         #The position of the mouse before moving
 isInsideNode = True     #Won't draw lines while this is true
 exitedNode = False      #Ignores clicking inside a node to increase it's degree
-placeNewPoint = False
+placeNewPoint = False   #Whether or not it is time to place a new point before continuing
 playerOneName = "Player 1"
 playerTwoName = "Player 2"
 displayName = playerOneName
 
+#Messages to display in the tooltip window at the bottom of the screen
 instMsgClickNode = "Left click a node to draw, right click to suggest"
 instMsgPlacePoint = "Left click to place a point"
 instMsgFinishPath = "Right click on a node to finish suggested line"
@@ -45,14 +45,16 @@ class SproutsController:
     def __init__(self,pygame,disp):
         self.disp = disp
         self.pygame = pygame
-        self.all_sprites_list = pygame.sprite.Group()
-        self.permLst = LinkedList()
-        self.tempLst = LinkedList()
-        self.fixList = LinkedList()
+        self.all_sprites_list = pygame.sprite.Group() #Contains all sprites, ie. nodes
+        self.permLst = LinkedList() #The list of all accepted lines
+        self.tempLst = LinkedList() #The list containing the segments of the line currently being modified/drawn
+        self.fixList = LinkedList() #Small list fix the visual bug where sometimes the line had a small visual gap between itself and the connected node.
 
 
-    #Allowing the user to close the window...
+    
     def GameLoop(self):
+
+        #FIELDS
         global nodeSize
         global labelCounter
         global LEFT
@@ -62,7 +64,6 @@ class SproutsController:
         global drawing
         global merged
         global last_pos
-        global drawPointsOnce
         global isInsideNode
         global exitedNode
         global placeNewPoint
@@ -70,27 +71,19 @@ class SproutsController:
         global playerTwoName
         global pathFound
         global displayName
-
         global displayInst
         global instMsgClickNode
         global instMsgFinishPath
         global instMsgPlacePoint
         global instMsgSaveLine
 
+        #Set background to white
         self.disp.screen.fill(self.disp.WHITE)
 
-        #self.disp.screen.fill(self.disp.WHITE)
-        #background = pygame.image.load("small_plant.png")
-        #background = pygame.transform.scale(background, (400, 400))
-        #self.disp.screen.blit(background, (400-328,500-256+10))
-
-        #FIELDS
+        #Create grid object, ie. underlying grid-graph.
         G = Grid(self.disp.size[0],self.disp.size[1])
 
-        #LinkedList
-        #permLst = LinkedList()
-        #tempLst = LinkedList()
-
+        #Set currently displayed name
         displayName = playerOneName
 
         #This will be a list that will contain all the sprites we intend to use in our game.
@@ -101,11 +94,11 @@ class SproutsController:
         clock=pygame.time.Clock()
  
         while carryOn:
-            #https://stackoverflow.com/questions/50503609/how-to-draw-a-continuous-line-in-pygame
                 for event in pygame.event.get():
+                    #Allows the user to close the window
                     if event.type==pygame.QUIT:
                         carryOn=False   
-                    elif pathFound:
+                    elif pathFound: #If a path has just been found, wait for the user to either accept or discard the found line.
                         keys = pygame.key.get_pressed()
                         if keys[K_SPACE]:
                             self.permLst.merge(self.tempLst)
@@ -131,16 +124,16 @@ class SproutsController:
                                 elif (placeNewPoint):    
                                     print("Place a new point, by left clicking")
                                 elif pathfinding and not (sprite == startNode):
-                                    print("TO")
+                                    
+                                    print("TO") 
 
+                                    #Terminal node
                                     endNode = sprite
-                                    print(endNode.getCoordinates())
+
+                                    print(endNode.getCoordinates()) #debug
                                     print("FINDING PATH...")
                                     
-                                    #Grid.find_path(startNode , endNode , self.tempLst , self.G , self.all_sprites_list) #Find path from prev. node to current node.
-
-                                    #Grid.pruned_grid(sprite,tempNode,self.G,5,all_sprites_list)
-                                    try:
+                                    try: #Checks if there is a path
                                         Grid.find_path(startNode , endNode , self.tempLst , self.G , self.all_sprites_list) #Find path from prev. node to current node.
                                         displayInst = instMsgSaveLine
                                         pathFound = True
@@ -148,26 +141,21 @@ class SproutsController:
                                         print(str(e))
                                         displayInst = instMsgNoPathfind
 
-                                    #self.tempLst.drawLst(self.disp.screen, self.disp.PURPLE)
-
+                                    #No longer pathfinding
                                     pathfinding = False
                                     H = None
+
+                                    #Draw found path, if any, red
                                     self.tempLst.drawLst(self.disp.screen,self.disp.LIGHT_RED)      
 
-                                    #remove underlying grid around new edge
-                                    #Grid.block_nodes(self.tempLst,self.G)
-
-                                    #Accept new edge, TODO: add condition for accepting
-                                    #self.permLst.merge(self.tempLst)    
                                 else:
-                                    #save pressed node
+                                    #Source node
                                     startNode = sprite
                                     
-                                    #debug
                                     print("FROM")
-                                    print(sprite.getCoordinates())
+                                    print(sprite.getCoordinates()) #debug
 
-                                    pathfinding = True #start pathfinding on next click
+                                    pathfinding = True #Start pathfinding
                                     displayInst = instMsgFinishPath
                                     
                          
