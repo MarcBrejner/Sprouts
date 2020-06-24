@@ -160,7 +160,7 @@ class SproutsController:
                                     
                          
                     elif event.type == MOUSEMOTION and pygame.mouse.get_pressed()[0]:
-                        if (drawing):
+                        if (drawing): #If the mouse moves, and the user is currently drawing
                             pos = pygame.mouse.get_pos()
                             # Restrict the mouse from going into the top region of the window
                             convert = list(pos)
@@ -200,26 +200,23 @@ class SproutsController:
                                 elif (disconnected(self.tempLst)):
                                     print("Collision with a node detected")
                                 elif exitedNode:
-                                    #TO:DO add check for whether or not counters are full
-                                
+
                                     #Add edge to perm list of edges.
-                                    #Grid.block_nodes(self.tempLst,self.G)
-                                    self.fixList.prepend( (self.tempLst.head.data[1] , (sprite.rect.centerx,sprite.rect.centery)) )
+                                    self.fixList.prepend( (self.tempLst.head.data[1] , (sprite.rect.centerx,sprite.rect.centery)) ) #fix visual bug
                                     self.permLst.merge(self.tempLst)
                                     merged = True
 
                                     endNode = sprite
 
-                                    #increment number of attached lines to both nodes
+                                    #increment degree of both nodes
                                     sprite.incrementCounter()
                                     startNode.incrementCounter()
 
                                     print(sprite.getCounter())
                                     placeNewPoint = True
                                     displayInst = instMsgPlacePoint
-                        # Delete drawn line if it didn't end in a sprite
-                        if (not merged):
-                            # TODO: This can erase existing lines, maybe we should fix
+                        
+                        if (not merged): # Delete drawn line if it didn't end in a sprite
                             self.tempLst.drawLst(self.disp.screen, self.disp.WHITE)
                             self.tempLst = LinkedList()
                         #Reset mouse position, tempList and drawing status on release.
@@ -258,10 +255,8 @@ class SproutsController:
                                         exitedNode = False
                                         placeNewPoint = False
                 
-                #Game Logic
+                #Update visuals
                 self.all_sprites_list.update()
-
-                
 
                 self.permLst.drawLst(self.disp.screen, self.disp.LIME_GREEN)
                 self.fixList.drawLst(self.disp.screen, self.disp.LIME_GREEN)
@@ -269,7 +264,6 @@ class SproutsController:
                 self.disp.gameButton("Controls", 20, 0, 100, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.showControls)
                 self.disp.gameButton("Surrender", self.disp.size[0]-140, 0, 120, 50, self.disp.BLACK, self.disp.GREEN, drawing, self.chooseWinner)
         
-                #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
                 self.all_sprites_list.draw(self.disp.screen)
 
                 self.disp.turnTracker(displayName)
@@ -279,11 +273,11 @@ class SproutsController:
                 self.disp.updateScreen(pygame)
 
                 #Number of frames per secong e.g. 60
-                clock.tick(180)
-
+                clock.tick(120)
+        #Quit game if gameloop is exited
         pygame.quit()
 
-    def initializeGameState(self, filename):
+    def initializeGameState(self, filename): #Initializes the game state specified in the textfile "filename"
         self.G = Grid(self.disp.size[0],self.disp.size[1])
         margin = 100
         lineCounter = 0
@@ -294,36 +288,34 @@ class SproutsController:
         lines = f.readlines()
         for line in lines:
             lineCounter += 1
-            if not(firstRead):
+            if not(firstRead): #For the very first line of the file, initialize only n nodes in grid-like structure
                 n = int(line)
                 for labelCounter in range(1,n+1):
                     currNode = Node(self.disp.BROWN, nodeSize, nodeSize, (margin*x),(margin*y), 0, labelCounter)
                     self.all_sprites_list.add(currNode)
-                    #Grid.remove_node_area(currNode,self.G,0)
                     x+=1
                     if ((margin*x)) >= (self.disp.size[0]):
                         x = 1
                         y += 1
                 firstRead = True
-            else:
-                #init edges between nodes as specificed, and check legality
+            else: #For the rest of the lines in the file, connect nodes as specified, in the given order, until an error is encountered.
                 labels = line.split()
                 startNode = self.all_sprites_list.sprites()[int(labels[0])-1]
                 endNode = self.all_sprites_list.sprites()[int(labels[1])-1]
-                if startNode.isFull() or endNode.isFull():
+                if startNode.isFull() or endNode.isFull(): #Check if a move would exceed the allowed maximum degree
                     print("Line {} would cause a node to exceed degree 3".format(lineCounter))
                     startNode = None
                     endNode = None
                     self.tempLst = LinkedList()
                     break;
-                elif (labels[0] == labels[1]):
+                elif (labels[0] == labels[1]): #Check if a move asks for a loop, loops are allowed but the pathfinding algorithm can not handle it.
                     print("Loop detected at line {}, ending initialization".format(lineCounter))
                     startNode = None
                     endNode = None
                     self.tempLst = LinkedList()
                     break;
                 try:
-                    Grid.find_path(startNode,endNode,self.tempLst,self.G,self.all_sprites_list) #Find path from prev. node to current node.
+                    Grid.find_path(startNode,endNode,self.tempLst,self.G,self.all_sprites_list) #Try to find a path between the specified nodes.
                 except:
                     print("Could not find a path between nodes {} and {} at line {} of initalize.txt..".format(labels[0],labels[1],lineCounter))
                     startNode = None
@@ -331,7 +323,7 @@ class SproutsController:
                     self.tempLst = LinkedList()
                     break;
                     
-
+                #Place a new node on the found line, increment degrees, block nodes in the underlying grid, before moving on to the next line
                 newNode = self.generate_node_on_path(startNode,endNode,self.tempLst,self.G)
                 startNode.incrementCounter()
                 endNode.incrementCounter()
@@ -343,7 +335,8 @@ class SproutsController:
                 startNode = None
                 endNode = None
                 self.tempLst = LinkedList()
-        print("Done med placering")
+        #Initialization finished
+        print("Done with initialization")
 
     # Create a point on the newly drawn line
     def newPointOnLine(self, pos, startNode, endNode, nodeSize):
