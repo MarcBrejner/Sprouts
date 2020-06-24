@@ -7,40 +7,26 @@ from itertools import product
 
 class Grid():
     def __init__(self, width, height):
-        #G = nx.grid_2d_graph(self.disp.size[0],self.disp.size[1])
+        #Initialize grid-graph using NetworkX
         self.G = nx.grid_2d_graph(width,height)
 
-    #https://stackoverflow.com/questions/49551440/python-all-points-on-circle-given-radius-and-center
+    #Produces the set of integer-points (x,y) inside the circle with radius and x0,y0 as center.
+    #The method is a modified version of the one found in https://stackoverflow.com/questions/49551440/python-all-points-on-circle-given-radius-and-center
     def points_in_circle_np(radius, x0=0, y0=0, ):
         s = set()
         x_ = np.arange(x0 - radius - 1, x0 + radius + 1, dtype=int)
         y_ = np.arange(y0 - radius - 1, y0 + radius + 1, dtype=int)
         x, y = np.where((x_[:,np.newaxis] - x0)**2 + (y_ - y0)**2 <= radius**2)
-        # x, y = np.where((np.hypot((x_-x0)[:,np.newaxis], y_-y0)<= radius)) # alternative implementation
         for x, y in zip(x_[x], y_[y]):
             s.add((x,y))
         return s
 
-    
-    def points_in_circle(radius):
-        for x, y in product(range(int(radius) + 1), repeat=2):
-            if x**2 + y**2 <= radius**2:
-                yield from set(((x, y), (x, -y), (-x, y), (-x, -y),))
-    
 
-    def block_nodes(lst,Gr,startNode,endNode,placedNode=None,reverseMargin=0):
+    def block_nodes(lst,Gr,startNode,endNode,placedNode=None,reverseMargin=0): #Removes vertices from the input grid if they are near the line represented by the input lst
         head = lst.head
         radius = 5
-        #if not (placedNode == None):
-        #    s = Grid.points_in_circle_np(placedNode.radius,placedNode.rect.centerx,placedNode.rect.centery)
-        #else: s = set()
-
-        #s = s.union(Grid.points_in_circle_np(startNode.radius,startNode.rect.centerx,startNode.rect.centery))
-        #s = s.union(Grid.points_in_circle_np(endNode.radius,endNode.rect.centerx,endNode.rect.centery))
-
 
         while head:
-            #We only use the start point of a segment because the circle is big enough
             xStart,yStart = head.data[0]
             xEnd,yEnd = head.data[1]
             if not (Grid.isPointInAnyCircle(startNode,endNode,placedNode,xStart,yStart)):
@@ -51,43 +37,32 @@ class Grid():
 
     def find_path(startNode, endNode , lst , G , spriteList):
 
-        #first click
-        #s = Grid.set_of_circumfering_points(startNode,G)
-        startPos = ((startNode.rect.centerx),(startNode.rect.centery)) #Grid.closest_in_set((endNode.rect.centerx,endNode.rect.centery),s)
+        #Coordinate-position of the source
+        startPos = ((startNode.rect.centerx),(startNode.rect.centery))
 
-        #second click
-        #s = Grid.set_of_circumfering_points(endNode,G)
+        #Coordinate-position of the terminal
         endPos = ((endNode.rect.centerx),(endNode.rect.centery))
 
-        #copy grid
+        #Make a copy of the grid, but with blocked areas around secondary nodes
         H = Grid.pruned_grid(startNode , endNode , G , 5 , spriteList)
 
-        #try to find shortest path
+        #try to find shortest path using NetworkX's implementation of Dijkstra's shortest path algorithm
         try:
             path = nx.dijkstra_path(H,startPos,endPos)
         except:
             raise Exception("No path available")
             return
         last_point = startPos
+        #insert path in the format of line-segments into the input linked list
         for point in path:
             lst.prepend((last_point,point))
             last_point = point
-        #increment node degree if succesful
-        #startNode.incrementCounter()
-        #endNode.incrementCounter()
 
-    def remove_node_area(node,Gr,margin):
+    
+    def remove_node_area(node,Gr,margin): #Removes underlying grid in a circle around a given node, with customizable margin
         Gr.G.remove_nodes_from(Grid.points_in_circle_np(node.radius+margin,node.rect.centerx,node.rect.centery))
 
-    def add_node_area(node,Gr): #obsolete
-        margin = 5
-        Q = Grid.points_in_circle_np(node.radius,node.rect.centerx,node.rect.centery)
-        #set of points around node
-        W = Grid.points_in_circle_np(node.radius+margin,node.rect.centerx,node.rect.centery)
-        W.difference_update(Q)
-        Gr.G.add_nodes_from(W)
-
-    def pruned_grid(start,end,Gr,margin,spriteList):
+    def pruned_grid(start,end,Gr,margin,spriteList): #Creates a copy of the input grid, and removes vertices in the areas around secondary nodes.
         H = Gr.G.__class__()
         H.add_nodes_from(Gr.G)
         H.add_edges_from(Gr.G.edges)
@@ -96,7 +71,7 @@ class Grid():
                 H.remove_nodes_from(Grid.points_in_circle_np(sprite.radius+margin,sprite.rect.centerx,sprite.rect.centery))
         return H
 
-    def set_of_circumfering_points(node,Gr):
+    def set_of_circumfering_points(node,Gr): #Finds the set of points that lies in circumference of a node, currently not in use
         margin = 1
         #set of points on node
         Q = Grid.points_in_circle_np(node.radius,node.rect.centerx,node.rect.centery)
@@ -109,21 +84,11 @@ class Grid():
         W.intersection_update(Gr.G.nodes)
         return W
 
-    def closest_in_set(mouse_pos,set):
-        shortestDist = 9999
-        point = mouse_pos
-        for p in set:
-            dist = intersection.distance(mouse_pos,p)
-            if dist < shortestDist:
-                shortestDist = dist
-                point = p
-        return point
-
-    def isPointInCircle(center_x, center_y, radius, x, y):
+    def isPointInCircle(center_x, center_y, radius, x, y): #Returns a boolean reflecting whether or not a given point, lies within a given circle.
         dist = abs(x - center_x)**2 + abs(y - center_y)**2
         return dist < radius **2
 
-    def isPointInAnyCircle(node1,node2,placedNode,x,y):
+    def isPointInAnyCircle(node1,node2,placedNode,x,y): #Returns a boolean reflecting whether or not a given point, lies within any of the three given nodes.
         if Grid.isPointInCircle(node1.rect.centerx,node1.rect.centery,node1.radius,x,y):
            return True
         elif Grid.isPointInCircle(node2.rect.centerx,node2.rect.centery,node2.radius,x,y):

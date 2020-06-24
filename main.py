@@ -4,7 +4,7 @@ from sproutsController import SproutsController
 from pygame.locals import *
 pygame.init()
 
-def main():
+def main(): #Main driver code
     gameIcon = pygame.image.load('plant.png')
     pygame.display.set_icon(gameIcon)
     disp = SproutsDisplay(400,500, pygame)

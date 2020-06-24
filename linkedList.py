@@ -1,5 +1,4 @@
 import pygame
-from point import Point
 
 # Node class
 class Node:

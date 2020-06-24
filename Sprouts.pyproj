@@ -22,12 +22,6 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="class1.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="point.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="linkedList.py">
       <SubType>Code</SubType>
     </Compile>
@@ -38,7 +32,7 @@
     </Compile>
     <Compile Include="sproutsController.py" />
     <Compile Include="sproutsDisplay.py" />
-    <Compile Include="squareNode.py" />
+    <Compile Include="node.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="initialize.txt" />
