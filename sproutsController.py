@@ -345,32 +345,38 @@ class SproutsController:
                 self.tempLst = LinkedList()
         print("Done med placering")
 
+    # Create a point on the newly drawn line
     def newPointOnLine(self, pos, startNode, endNode, nodeSize):
         global labelCounter
         global placeNewPoint
+        # get the position of the new node
         position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize, self.permLst, self.all_sprites_list, self.disp)
-        #self.all_sprites_list.add()
+        # create the new node
         newNode = Node(self.disp.BROWN, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter)
         labelCounter += 1
         placeNewPoint = False
         return newNode
 
+    # Create a point on a found path during initialization
     def generate_node_on_path(self,startNode,endNode,lst,G):
-        radius = 30
+        radius = 30 # Distance the new node has to be from the start/end node of the line
         center_startNode = np.subtract(startNode.getCoordinates(), (nodeSize/2, nodeSize/2))
         center_endNode = np.subtract(endNode.getCoordinates(), (nodeSize/2, nodeSize/2))
 
-        Node_bool = False
+        Node_bool = False # if this is true, the new node is far enough away from the start/end node
 
         shortestDist = 999999999
+        # Iterate through the new line
         curr_segment = lst.head
         closestNode = curr_segment.data[0]
         while curr_segment:
+            # Find the distance between the current points start node on the line and the start/end node
             dx_end = abs(curr_segment.data[0][0] - endNode.rect.x-10)
             dy_end = abs(curr_segment.data[0][1] - endNode.rect.y-10)
             dx_start = abs(curr_segment.data[0][0] - startNode.rect.x-10)
             dy_start = abs(curr_segment.data[0][1] - startNode.rect.y-10)
 
+            # Check if the point on the line is far enough away from the start/end node
             if (distance(curr_segment.data[0], center_startNode) >= distance(curr_segment.data[0], center_endNode)):
                 if (dx_end>radius or dy_end>radius):
                     Node_bool = True
@@ -382,22 +388,22 @@ class SproutsController:
                 else:
                     Node_bool = False
 
-            #distance_from_click = distance(curr_segment.data[0], mouse_pos)
+            # Return the start point of the line segment as soon as the point is outside the radius of the start/end node
             if(Node_bool):
-                #shortestDist = distance_from_click
                 closestNode = curr_segment.data[0]
                 break
             curr_segment = curr_segment.next
         if(closestNode == lst.head.data[0]):
             print("No point found")
-        
         return Node(self.disp.BROWN, nodeSize, nodeSize, closestNode[0], closestNode[1], 2, labelCounter)
 
+    # Create popup window for game controls with tkinter library
     def showControls(self):
-        window = Tk()
+        window = Tk() # Create window
         window.attributes("-topmost", True)
-        window.title("Sprouts Controls")
+        window.title("Sprouts Controls") # Set title of the window
 
+        # Method to close the window
         def close_window():
             window.destroy()
 
@@ -407,26 +413,29 @@ class SproutsController:
         top.pack(side=TOP)
         bottom.pack(side=BOTTOM, fill=BOTH, expand=True)
 
+        # Make the text and a button to close the window
         label = Label(window, text="\u2022 Use the left mousebutton to draw a line in freehand \n\n \u2022 Use the right mouse button to do pathfinding \n\n \u2022 After pathfinding, click space to accept the line and esc to delete it \n\n \u2022 Click with the left mouse button to place a new point", background="#ffffff", justify="left")
         button = Button(window, text="OK", command=close_window, bg="white")
         
+        # Position the text and the button in the window
         label.pack(in_=top)
         button.pack(in_=bottom)
-        bottom.configure(bg="white")
+        bottom.configure(bg="white") # Set background color
         window.mainloop()
 
+    # Create popup window to surrender and declare a winner using tkinter library
     def chooseWinner(self):
-
-        window = Tk()
+        window = Tk() # create window
         window.attributes("-topmost", True)
-        window.title("Winner")
+        window.title("Winner") # set window title
 
-        #Organise the popup window
+        # Organise the popup window
         top = Frame(window)
         bottom = Frame(window)
         top.pack(side=TOP)
         bottom.pack(side=BOTTOM, fill=BOTH, expand=True)
 
+        # Method to close the window
         def continue_game():
             window.destroy()
 
@@ -436,13 +445,16 @@ class SproutsController:
                 root.destroy()
 
             window.destroy()
+
+            # Determine which player won
             winnerName = ""
             if (displayName == playerOneName): 
                 winnerName = playerTwoName
             else:
                 winnerName = playerOneName
-            root = Tk()
+            root = Tk() # Create new window
             root.title("Winner")
+            # Create the text and button
             label = Label(root, text="The winner of the game is " + winnerName + "! \n\n Congratulations\n", bg="white").pack()
             button = Button(root, text="OK", command=close_end_game, bg="white").pack()
             root.configure(bg="white")
@@ -459,6 +471,7 @@ class SproutsController:
         button1.pack(in_=bottom, side="left")
         button2.pack(in_=bottom, side="right")
 
+        # Set backround color
         window.configure(bg="white")
         bottom.configure(bg="white")
         window.mainloop()

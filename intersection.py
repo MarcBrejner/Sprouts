@@ -134,7 +134,7 @@ def closest_point(mouse_pos, lst, startNode, endNode, nodeSize, permLst, sprites
     curr_segment = lst.head
     closestNode = curr_segment.data[0]
     while curr_segment:
-        # Find the distance between the current point on the line and the start/end node
+        # Find the distance between the current points start node on the line and the start/end node
         dx_end = abs(curr_segment.data[0][0] - endNode.rect.x-10)
         dy_end = abs(curr_segment.data[0][1] - endNode.rect.y-10)
         dx_start = abs(curr_segment.data[0][0] - startNode.rect.x-10)
@@ -161,7 +161,7 @@ def closest_point(mouse_pos, lst, startNode, endNode, nodeSize, permLst, sprites
                 closestNode = curr_segment.data[0]
         curr_segment = curr_segment.next
     if(closestNode == lst.head.data[0]):
-        print("Der kunne ikke findes et punkt")
+        print("No point found")
     return closestNode
 
 # Check if the new point is close to another node in the game which is not the start/end point of the new line
@@ -169,7 +169,7 @@ def intersectionWithOtherPoints(pointOnLine, spritesLst, display):
     newPoint = pygame.draw.circle(display.screen, display.WHITE, (pointOnLine[0], pointOnLine[1]), 7)
     for sprite in spritesLst:
         if (sprite.rect.colliderect(newPoint)):
-            print("For tæt på et punkt")
+            print("Too close to a node")
             return False
             break
         else:
