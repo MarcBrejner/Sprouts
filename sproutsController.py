@@ -1,9 +1,8 @@
 #IMPORTS
 import pygame, random
 from pygame.locals import *
-from squareNode import SquareNode
+from node import Node
 from linkedList import LinkedList
-from point import Point
 from intersection import *
 from tkinter import *
 import networkx as nx
@@ -310,7 +309,7 @@ class SproutsController:
             if not(firstRead):
                 n = int(line)
                 for labelCounter in range(1,n+1):
-                    currNode = SquareNode(self.disp.BROWN, nodeSize, nodeSize, (margin*x),(margin*y), 0, labelCounter)
+                    currNode = Node(self.disp.BROWN, nodeSize, nodeSize, (margin*x),(margin*y), 0, labelCounter)
                     self.all_sprites_list.add(currNode)
                     #Grid.remove_node_area(currNode,self.G,0)
                     x+=1
@@ -323,6 +322,18 @@ class SproutsController:
                 labels = line.split()
                 startNode = self.all_sprites_list.sprites()[int(labels[0])-1]
                 endNode = self.all_sprites_list.sprites()[int(labels[1])-1]
+                if startNode.isFull() or endNode.isFull():
+                    print("Line {} would cause a node to exceed degree 3".format(lineCounter))
+                    startNode = None
+                    endNode = None
+                    self.tempLst = LinkedList()
+                    break;
+                elif (labels[0] == labels[1]):
+                    print("Loop detected at line {}, ending initialization".format(lineCounter))
+                    startNode = None
+                    endNode = None
+                    self.tempLst = LinkedList()
+                    break;
                 try:
                     Grid.find_path(startNode,endNode,self.tempLst,self.G,self.all_sprites_list) #Find path from prev. node to current node.
                 except:
@@ -351,7 +362,7 @@ class SproutsController:
         global placeNewPoint
         position_of_new_sprite = closest_point(pos, self.tempLst, startNode, endNode, nodeSize, self.permLst, self.all_sprites_list, self.disp)
         #self.all_sprites_list.add()
-        newNode = SquareNode(self.disp.BROWN, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter)
+        newNode = Node(self.disp.BROWN, nodeSize, nodeSize, position_of_new_sprite[0], position_of_new_sprite[1], 2, labelCounter)
         labelCounter += 1
         placeNewPoint = False
         return newNode
@@ -392,7 +403,7 @@ class SproutsController:
         if(closestNode == lst.head.data[0]):
             print("No point found")
         
-        return SquareNode(self.disp.BROWN, nodeSize, nodeSize, closestNode[0], closestNode[1], 2, labelCounter)
+        return Node(self.disp.BROWN, nodeSize, nodeSize, closestNode[0], closestNode[1], 2, labelCounter)
 
     def showControls(self):
         window = Tk()
