@@ -256,7 +256,6 @@ class SproutsController:
                                         placeNewPoint = False
                 
                 #Update visuals
-                self.all_sprites_list.update()
 
                 self.permLst.drawLst(self.disp.screen, self.disp.LIME_GREEN)
                 self.fixList.drawLst(self.disp.screen, self.disp.LIME_GREEN)
