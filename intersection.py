@@ -1,3 +1,6 @@
+#This module is used for determining whether any of the lines in the game intersect with objects.
+#This module has mostly been worked on by Christian.
+
 import numpy as np
 import math
 from grid import Grid

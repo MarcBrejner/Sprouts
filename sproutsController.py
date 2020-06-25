@@ -1,3 +1,9 @@
+#The main controller class, controls the state of the game, and manipulates objects accordingly.
+#This class is quite large and both Christian and Marc have worked on it. The game loop has been a very equally shared workload, 
+#Where as some of the auxiliary methods have mainly been worked on by an individual
+#InitializeGameState and GenerateNodeOnPath have mainly been worked on by Marc
+#NewPointOnLine, ShowControls, ChooseWinner have mainly been worked on by Christian
+
 #IMPORTS
 import pygame, random
 from pygame.locals import *

@@ -1,3 +1,5 @@
+#Main driver module
+
 import pygame, random
 from sproutsDisplay import SproutsDisplay
 from sproutsController import SproutsController

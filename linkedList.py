@@ -1,3 +1,6 @@
+#This class contains the Linked List object used to store and represent the line segments that make up the lines of the game.
+#This class has mostly been worked on by Christian
+
 import pygame
 
 # Node class

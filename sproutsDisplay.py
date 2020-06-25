@@ -1,3 +1,6 @@
+#This class mainly represents the view of the program, and contains methods and fields related to updating the game state visually
+#This class has been worked on by both Marc and Christian but mostly by Christian
+
 import pygame
 
 class SproutsDisplay:

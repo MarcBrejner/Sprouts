@@ -1,3 +1,6 @@
+#This class is represents the underlying grid-graph used in the game for suggesting a path to the user.
+#It has mostly been worked on by Marc
+
 import networkx as nx
 import numpy as np
 import pygame

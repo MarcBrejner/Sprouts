@@ -1,3 +1,5 @@
+#This class represents the node object used in the game, this class has mostly been developed by Marc
+
 import pygame
 WHITE = (255, 255, 255)
 counter = 0
