@@ -26,9 +26,9 @@ class SproutsDisplay:
     # Redrawn the screen as white, with a simple text and an image
     def loadingScreen(self):
         self.screen.fill(self.WHITE)
-        background = pygame.image.load("small_plant.png")
+        background = pygame.image.load("images\small_plant.png")
         self.screen.blit(background, (self.size[0]-328, self.size[1]-256+10))
-        largeText = pygame.font.Font("Pacifico.ttf", 50) # Choose font and font size
+        largeText = pygame.font.Font("fonts\Pacifico.ttf", 50) # Choose font and font size
         TextSurf, TextRect = SproutsDisplay.text_objects("Loading...", largeText, self.BLACK) # Get the text surface and the size of the text
         TextRect.center = ((self.size[0]/2, self.size[1]/8)) # Set the center of the text
         self.screen.blit(TextSurf, TextRect)
@@ -41,7 +41,7 @@ class SproutsDisplay:
 
     # Draw an instruction at the bottom of the screen, telling the player what to do
     def turnInstructions(self, message):
-        smallText = pygame.font.Font("freesansbold.ttf", 15)
+        smallText = pygame.font.Font("fonts\\freesansbold.ttf", 15)
         TextSurf, TextRect = SproutsDisplay.text_objects(message, smallText, self.BLACK)
         TextRect.center = ((self.size[0]/2, 475))
         pygame.draw.rect(self.screen, self.WHITE, (0, 455, self.size[0], 50))
@@ -62,7 +62,7 @@ class SproutsDisplay:
             pygame.draw.rect(self.screen, i_color, (pos_x, pos_y, width, height), 3)
 
         # Set the text on the button and draw the button itself
-        smallText = pygame.font.Font("freesansbold.ttf", 20)
+        smallText = pygame.font.Font("fonts\\freesansbold.ttf", 20)
         textSurf, textRect = SproutsDisplay.text_objects(msg, smallText, self.BLACK)
         textRect.center = ((pos_x+(width/2)), (pos_y+(height/2)))
         pygame.draw.rect(self.screen, self.WHITE, (pos_x+3, pos_y+3, width-6, height-6))
@@ -73,7 +73,7 @@ class SproutsDisplay:
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
-        smallText = pygame.font.Font("freesansbold.ttf", 20)
+        smallText = pygame.font.Font("fonts\\freesansbold.ttf", 20)
 
         #Hightlight text, when mouse hover
         if pos_x+width > mouse[0] > pos_x and pos_y+height > mouse[1] > pos_y:
@@ -91,7 +91,7 @@ class SproutsDisplay:
 
     # Write who's players turn it is at the center and top of the screen
     def turnTracker(self, displayName):
-        largeText = pygame.font.Font("Pacifico.ttf", 30)
+        largeText = pygame.font.Font("fonts\Pacifico.ttf", 30)
         TextSurf, TextRect = SproutsDisplay.text_objects(displayName, largeText, self.BLACK)
         TextRect.center = ((self.size[0]/2, 20))
         pygame.draw.rect(self.screen, self.WHITE, (self.size[0]/2-60, 0, 120, 50))
@@ -108,9 +108,9 @@ class SproutsDisplay:
             
             #Ready the menu screen with text and image
             self.screen.fill(self.WHITE)
-            background = pygame.image.load("small_plant.png")
+            background = pygame.image.load("images\small_plant.png")
             self.screen.blit(background, (self.size[0]-328, self.size[1]-256+10))
-            largeText = pygame.font.Font("Pacifico.ttf", 50)
+            largeText = pygame.font.Font("fonts\Pacifico.ttf", 50)
             TextSurf, TextRect = SproutsDisplay.text_objects("Sprouts", largeText, self.BLACK)
             TextRect.center = ((self.size[0]/2, self.size[1]/8))
             self.screen.blit(TextSurf, TextRect)

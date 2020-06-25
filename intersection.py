@@ -1,4 +1,3 @@
-from scipy.spatial import distance #pip3 install scipy
 import numpy as np
 import math
 from grid import Grid
