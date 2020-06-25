@@ -1,7 +1,7 @@
 import pygame
 
 # Node class
-class Node:
+class Link:
 
     # Initialize node
     def __init__(self, data, next):
@@ -29,7 +29,7 @@ class LinkedList:
 
     # Insert item in the beginning of the list
     def prepend(self, data):
-        self.head = Node(data=data, next=self.head)
+        self.head = Link(data=data, next=self.head)
 
     # Remove the content of the list
     def clean(self):
